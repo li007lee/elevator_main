@@ -1,0 +1,57 @@
+#BOX_TYPE?=pc_x86
+#BOX_TYPE?=hisi_v100
+BOX_TYPE?=hisi_v300
+
+
+ifeq ($(BOX_TYPE), pc_x86)
+CC=gcc
+STRIP=strip
+CFLAGS = -Wall -O2
+INC_PATH = -I../inc/X86_64
+LIBS :=  -L../lib/X86_64 \
+			-lxml -levent -lavformat \
+			-lavcodec -lavfilter -lswscale -lavutil -lswresample -lm -ldl -lpthread -lrt
+
+APPBIN = elevator_mainX86_64
+DEST_BIN = /mnt/hgfs/share_dir/nfs_dir
+endif
+
+ifeq ($(BOX_TYPE), hisi_v100)
+CC=arm-hisiv100nptl-linux-gcc
+STRIP=arm-hisiv100nptl-linux-strip
+CFLAGS = -Wall -O2
+INC_PATH = -I../inc/hisiv100
+LIBS :=  -L../lib/hisiv100 \
+			-lxml -levent -lavformat \
+			-lavcodec -lavfilter -lswscale -lavutil -lswresample -lm -ldl -lpthread -lrt
+
+APPBIN = elevator_main100
+DEST_BIN = /mnt/hgfs/share_dir/nfs_dir
+endif
+
+ifeq ($(BOX_TYPE), hisi_v300)
+CC=arm-hisiv300-linux-gcc
+STRIP=arm-hisiv300-linux-strip
+CFLAGS = -Wall -O2
+INC_PATH = -I../inc/hisiv300
+LIBS :=  -L../lib/hisiv300 \
+			-lxml -levent -lavformat \
+			-lavcodec -lavfilter -lswscale -lavutil -lswresample -lm -ldl -lpthread -lrt
+
+DEST_BIN_LOCAL = ../bin
+DEST_BIN = /mnt/hgfs/share_dir/nfs_dir
+APPBIN = elevator_main300
+endif
+
+
+SRCS = $(wildcard ./common/*.c *.c ./sensor/*.c)
+OBJS = $(patsubst %.c,%.o,$(notdir ${SRCS})) 
+
+
+all:
+	$(CC) $(SRCS) $(INC_PATH) $(LIBS) $(CFLAGS) -o $(APPBIN)
+	$(STRIP) $(APPBIN)
+	cp $(APPBIN) $(DEST_BIN)/$(APPBIN)
+	mv $(APPBIN) $(DEST_BIN_LOCAL)
+clean:
+	rm -rf $(OBJS) $(DEST_BIN_LOCAL)/$(APPBIN)
