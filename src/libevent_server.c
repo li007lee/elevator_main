@@ -5,15 +5,15 @@
  *      Author: li007lee
  */
 
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-
+//#include <netinet/in.h>
+//#include <sys/types.h>
+//#include <sys/socket.h>
+//#include <arpa/inet.h>
+//#include <stdio.h>
+//#include <string.h>
+//#include <stdlib.h>
+//#include <unistd.h>
+#include "my_include.h"
 #include "event.h"
 #include "event2/listener.h"
 
@@ -83,6 +83,14 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 				break;
 		}
 	}
+	else if (strncmp(arrc_MsgType, "GetSensorInfo", strlen("GetSensorInfo")) == 0) //报警消息
+	{
+//		bufferevent_disable(buf_bev, EV_READ|EV_WRITE);
+
+		bufferevent_write(buf_bev, &sensor_info, sizeof(sensor_info));
+
+//		bufferevent_free(buf_bev);
+	}
 
 	return;
 }
@@ -110,7 +118,7 @@ static void accept_client_connect_cb(struct evconnlistener *listener, evutil_soc
 	tv_w.tv_usec = 0;
 	bufferevent_set_timeouts(accept_sockfd_bev, &tv_w, NULL);
     bufferevent_setcb(accept_sockfd_bev, cmd_task_read_cb, NULL, cmd_task_event_cb, (void*)NULL);
-    bufferevent_enable(accept_sockfd_bev, EV_READ);
+    bufferevent_enable(accept_sockfd_bev, EV_READ|EV_WRITE);
     //bufferevent_enable(accept_sockfd_bev, EV_READ|EV_WRITE);
     return;
 }

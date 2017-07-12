@@ -181,7 +181,6 @@ int send_udp_data(UDP_HEADER *pHeader, UDP_SERVER_INFO *stUdpServerInfo, char *p
 		FD_SET(stUdpServerInfo->iSockFd, &writeset);
 		wait_time.tv_sec = timeout;
 		wait_time.tv_usec = 0;
-
 		iRet = select(FD_SETSIZE, NULL, &writeset, NULL, &wait_time);
 		if (iRet < 0)
 		{
@@ -193,34 +192,33 @@ int send_udp_data(UDP_HEADER *pHeader, UDP_SERVER_INFO *stUdpServerInfo, char *p
 			TRACE_LOG("select timeout\n");
 			return -1;
 		}
-
-		pHeader->sDataLen = iDataLen;
-		pHeader->iSid += 1;
-
-
-		memcpy(arrcSendBuf, (const char *)pHeader, SEND_BUF_LEN);
-		strncpy(arrcSendBuf+UDP_HEADER_LEN, pSendData, SEND_BUF_LEN-UDP_HEADER_LEN);
-		iSendLen = sendto(stUdpServerInfo->iSockFd, arrcSendBuf, UDP_HEADER_LEN+iDataLen, 0, \
-					(struct sockaddr*)&stUdpServerInfo->addr, \
-					(socklen_t)stUdpServerInfo->sockaddr_in_len);
-		//printf("send len:[%d]\n", len);
-
-		if (iSendLen <= 0)
+		else
 		{
-			if (errno == EINTR)
+			pHeader->sDataLen = iDataLen;
+			pHeader->iSid += 1;
+			memcpy(arrcSendBuf, (const char *)pHeader, SEND_BUF_LEN);
+			strncpy(arrcSendBuf+UDP_HEADER_LEN, pSendData, SEND_BUF_LEN-UDP_HEADER_LEN);
+			iSendLen = sendto(stUdpServerInfo->iSockFd, arrcSendBuf, UDP_HEADER_LEN+iDataLen, 0, \
+						(struct sockaddr*)&stUdpServerInfo->addr, \
+						(socklen_t)stUdpServerInfo->sockaddr_in_len);
+			//printf("send len:[%d]\n", len);
+			if (iSendLen <= 0)
 			{
-				TRACE_ERR("send err=%d(%s), again\n", errno, strerror(errno));
-				//goto RETRY;
-				continue; /* just an interrupted system call */
+				if (errno == EINTR)
+				{
+					TRACE_ERR("send err=%d(%s), again\n", errno, strerror(errno));
+					//goto RETRY;
+					continue; /* just an interrupted system call */
+				}
+				else
+				{
+					TRACE_ERR("send err=%d(%s)\n", errno, strerror(errno));
+					return -2;
+				}
 			}
-			else
-			{
-				TRACE_ERR("send err=%d(%s)\n", errno, strerror(errno));
-				return -2;
-			}
+			pSendData += iSendLen;
+			iDataLen -= iSendLen;
 		}
-		pSendData += iSendLen;
-		iDataLen -= iSendLen;
 	}
 
 	return iSendLen;

@@ -1,9 +1,9 @@
-#BOX_TYPE?=pc_x86
+#BOX_TYPE?=pc_x86_64
 #BOX_TYPE?=hisi_v100
 BOX_TYPE?=hisi_v300
 
 
-ifeq ($(BOX_TYPE), pc_x86)
+ifeq ($(BOX_TYPE), pc_x86_64)
 CC=gcc
 STRIP=strip
 CFLAGS = -Wall -O2
@@ -52,6 +52,6 @@ all:
 	$(CC) $(SRCS) $(INC_PATH) $(LIBS) $(CFLAGS) -o $(APPBIN)
 	$(STRIP) $(APPBIN)
 	cp $(APPBIN) $(DEST_BIN)/$(APPBIN)
-	mv $(APPBIN) $(DEST_BIN_LOCAL)
+	mv $(APPBIN) $(DEST_BIN_LOCAL)/$(APPBIN)
 clean:
 	rm -rf $(OBJS) $(DEST_BIN_LOCAL)/$(APPBIN)

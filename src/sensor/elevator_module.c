@@ -108,25 +108,23 @@ HB_VOID *elevator_recv_data_task(HB_VOID *param)
 			if (ele_data_list.plist->cnt >= MAX_SAVE_DATA)
 			{
 				printf("Too many data not send! Free from head!!\n");
+				sensor_info.send_sensor_data_miss_count++;
 				pthread_mutex_lock(&(ele_data_list.list_mutex));
 				list_remove_head_node(ele_data_list.plist);
 				pthread_mutex_unlock(&(ele_data_list.list_mutex));
 			}
-
 			SONSER_DATA_NODE_HANDLE sonser_data_node = NULL;
 			pthread_mutex_lock(&(ele_data_list.list_mutex));
 			sonser_data_node = (SONSER_DATA_NODE_HANDLE)list_add_node_to_end(ele_data_list.plist);
 			sonser_data_node->msg_buf = send_msg;
 			sonser_data_node->buf_len = strlen(send_msg) + 1;
 			pthread_mutex_unlock(&(ele_data_list.list_mutex));
-
 			if(HB_TRUE == ele_data_list.b_wait)
 			{
 				pthread_mutex_lock(&(ele_data_list.list_mutex));
 				pthread_cond_signal(&(ele_data_list.list_empty));
 				pthread_mutex_unlock(&(ele_data_list.list_mutex));
 			}
-
 		}
 
 		pthread_join(sensor_ctx.accl_thread_id, NULL);
@@ -179,8 +177,14 @@ RETRY:
     	sleep(10);
 	}
 #else
-	create_socket_and_set_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT);
-    while(1)
+CONNECT_AGAIG:
+	if (create_socket_and_set_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT) < 0)
+	{
+		printf("connect to udp server failed!\n");
+		sleep(3);
+		goto CONNECT_AGAIG;
+	}
+	while(1)
     {
     	while(ele_data_list.plist->cnt < 1)
     	{
@@ -195,6 +199,7 @@ RETRY:
     	iRet = send_udp_data(&stSendHeader, &stUdpInfo, send_msg, strlen(send_msg), 1);
     	printf("Send::::sockfd=[%d], msg=[%s], strlen=[%d], sendlen=[%d]\n",\
     					stUdpInfo.iSockFd, send_msg, strlen(send_msg), iRet);
+    	sensor_info.send_sensor_data_total_cout++;
     	if(-1 == iRet)//发送数据失败
     	{
     		sleep(2);
@@ -209,12 +214,16 @@ RETRY:
     		iRet = recv_udp_data(&stUdpInfo, arrcRecvBuf, sizeof(arrcRecvBuf), 2);
     		if (iRet < 0)
     		{
+    			//未收到回应，数据需要重发
+    			sensor_info.send_sensor_data_resend_count++;
     			printf("Recv::::recv[%d]:[%s]\n", iRet, arrcRecvBuf);
         		close_udp(&stUdpInfo);
         		create_socket_and_set_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT);
     		}
     		else
     		{
+    			//收到UDP服务器回应，说明发送数据成功
+    			sensor_info.send_sensor_data_success_count++;
 				printf("Recv::::recv[%d]:[%s]\n", iRet, arrcRecvBuf);
 				pthread_mutex_lock(&(ele_data_list.list_mutex));
 				list_remove_head_node(ele_data_list.plist);

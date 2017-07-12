@@ -15,6 +15,7 @@
 extern void start_listening();
 
 DEV_INFO_OBJ dev_info;
+SENSOR_INFO sensor_info;
 
 static void init_dev_info()
 {
@@ -22,6 +23,12 @@ static void init_dev_info()
 	dev_info.sample_frequency = 1;
 	get_sys_mac(dev_info.mac, sizeof(dev_info.mac));
 	get_sys_sn(dev_info.sn, sizeof(dev_info.sn));
+
+	sensor_info.send_sensor_data_total_cout = 0;	//发送传感器数据的总次数
+	sensor_info.send_sensor_data_success_count = 0; //发送传感器数据成功的总次数
+	sensor_info.send_sensor_data_resend_count = 0; //传感器数据重发的总次数
+	sensor_info.send_sensor_data_miss_count = 0; //缓冲区满后丢包总次数
+	sensor_info.alarm_pic_upload_count = 0; //报警图片上传总张数
 }
 
 int main()

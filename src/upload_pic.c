@@ -118,6 +118,7 @@ HB_S32 upload_picture_xml_cb(xmlDoc *doc, void *param, HB_CHAR *tags, HB_CHAR *v
 		{
 			//上传成功
 			dev_info.upload_pic_success_flag = 1;
+			sensor_info.alarm_pic_upload_count++;
 		}
 		else if ((atoi(values) == -401) || (atoi(values) == -403))
 		{
