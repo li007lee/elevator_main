@@ -85,8 +85,8 @@ typedef enum _tagHB_BOOL
 #define PT_ADDR_IP  "elevator.hbydt.cn"
 #define PT_PORT     8088
 //传感器数据上传服务器
-//#define UDP_SERVER_IP "elevator.hbydt.cn"
-#define UDP_SERVER_IP "alarmtest.hbydt.net"
+//#define UDP_SERVER_IP "elevator.hbydt.cn"	//正式服务器
+#define UDP_SERVER_IP "alarmtest.hbydt.net" //测试服务器
 #define UDP_SERVER_PORT 9001
 
 //报警到来发送信号到服务器
@@ -96,7 +96,7 @@ typedef enum _tagHB_BOOL
 #define MAX_ERR_CRITICAL	10
 #define MAX_ERR_TIMES		3
 
-#define PIC_MAX_SIZE	(51200) //图片最大为50K
+#define PIC_MAX_SIZE	(102400) //图片最大为100K
 #define ETHX  "eth0"
 
 typedef struct _tagDEV_INFO//设备信息结构体
@@ -108,9 +108,21 @@ typedef struct _tagDEV_INFO//设备信息结构体
     HB_CHAR sn[32];		//设备序列号
     HB_CHAR access_token[64]; //获取到的token
     HB_CHAR sessionId[64];	//上传传感器数据是需要的sessionId
+
 }DEV_INFO_OBJ, *DEV_INFO_HANDLE;
 
+typedef struct _SENSOR_INFO
+{
+    //统计计数
+	HB_U32 send_sensor_data_total_cout;	//发送传感器数据的总次数
+	HB_U32 send_sensor_data_success_count; //发送传感器数据成功的总次数
+	HB_U32 send_sensor_data_resend_count; //传感器数据重发的总次数
+	HB_U32 send_sensor_data_miss_count; //缓冲区满后丢包总次数
+	HB_U32 alarm_pic_upload_count; //报警图片上传成功总张数
+}SENSOR_INFO;
+
 extern DEV_INFO_OBJ dev_info;
+extern SENSOR_INFO sensor_info;
 
 #define DEBUG
 #ifdef DEBUG

@@ -5,18 +5,11 @@
  *      Author: li007lee
  */
 
-//#include <netinet/in.h>
-//#include <sys/types.h>
-//#include <sys/socket.h>
-//#include <arpa/inet.h>
-//#include <stdio.h>
-//#include <string.h>
-//#include <stdlib.h>
-//#include <unistd.h>
 #include "my_include.h"
 #include "event.h"
 #include "event2/listener.h"
 
+#include "./common/common.h"
 #include "upload_pic.h"
 
 #define LIBEVENT_LISTEN_PORT 25555
@@ -45,8 +38,8 @@ static void cmd_task_event_cb(struct bufferevent *bev, short events, void *args)
 // 读取回调函数
 static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 {
-	char arrc_MsgType[16] = {0};
-	char arrc_Value[8] = {0};
+//	char arrc_MsgType[32] = {0};
+	char arrcCommand[32] = {0};
 	char dataBuf[512] = {0};
 
 	struct evbuffer *src = bufferevent_get_input(buf_bev);//获取输入缓冲区
@@ -54,7 +47,7 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 	if(evbuffer_remove(src, dataBuf, len))
 	{
 		printf("recv_datas=[%s]\n", dataBuf);
-		if (strncmp(dataBuf, "MsgType=", strlen("MsgType=")) != 0)
+		if (strstr(dataBuf, "Command") == NULL)
 		{
 			printf("Error data!\n");
 			bufferevent_free(buf_bev);
@@ -62,11 +55,14 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 		}
 	}
 
+	analysis_json(dataBuf, "Command", arrcCommand, sizeof(arrcCommand));
 	//MsgType=Alarm&Number=0
-	sscanf(dataBuf, "MsgType=%[^&]&Number=%s", arrc_MsgType, arrc_Value);
-	if (strncmp(arrc_MsgType, "Alarm", strlen("Alarm")) == 0) //报警消息
+//	sscanf(dataBuf, "MsgType=%[^&]&Number=%s", arrc_MsgType, arrc_Value);
+	if (strncmp(arrcCommand, "Alarm", strlen("Alarm")) == 0) //报警消息
 	{
-		switch(atoi(arrc_Value))
+		char arrcAlarmNum[2] = {0};
+		analysis_json(dataBuf, "Number", arrcAlarmNum, sizeof(arrcAlarmNum));
+		switch(atoi(arrcAlarmNum))
 		{
 			case 0: //手动报警
 			{
@@ -83,12 +79,9 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 				break;
 		}
 	}
-	else if (strncmp(arrc_MsgType, "GetSensorInfo", strlen("GetSensorInfo")) == 0) //报警消息
+	else if (strncmp(arrcCommand, "GetSensorInfo", strlen("GetSensorInfo")) == 0) //报警消息
 	{
-//		bufferevent_disable(buf_bev, EV_READ|EV_WRITE);
-
 		bufferevent_write(buf_bev, &sensor_info, sizeof(sensor_info));
-
 //		bufferevent_free(buf_bev);
 	}
 
