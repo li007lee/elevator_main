@@ -14,7 +14,7 @@
 
 pthread_mutex_t mutex_send_pic = PTHREAD_MUTEX_INITIALIZER;
 
-HB_S32 elevator_get_token()
+HB_VOID *elevator_get_token(HB_VOID *arg)
 {
 	HB_S32 ret = 0;
 	HB_S32 sockfd = -1;
@@ -44,7 +44,7 @@ HB_S32 elevator_get_token()
 		break;
     }
 
-    return HB_SUCCESS;
+    return NULL;
 }
 
 
@@ -123,7 +123,7 @@ HB_S32 upload_picture_xml_cb(xmlDoc *doc, void *param, HB_CHAR *tags, HB_CHAR *v
 		else if ((atoi(values) == -401) || (atoi(values) == -403))
 		{
 			//重新获取令牌
-			elevator_get_token();
+			elevator_get_token(NULL);
 		}
 		else
 		{
@@ -157,7 +157,9 @@ static HB_S32 elevator_upload_pic(char *pPicBase64, unsigned long long get_pic_t
 	HB_CHAR *point = NULL;
 
 	gettimeofday(&tv,NULL);
-	time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000;//取毫秒值
+//	time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000;//取毫秒值
+	//由于DVR的NTP校时时会把北京时间校为UTC时间，所以要取格林威治时间需要在此时间上减去8小时的秒数，28800000为8小时的毫秒数
+	time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000 - 28800000;//取毫秒值
 	snprintf(body_buf, sizeof(body_buf), \
 		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n\r\n<root>\r\n<access_token>%s</access_token>\r\n<stamp>%llu</stamp>\r\n<datas>\r\n<sn>%s</sn>\r\n<acquisitionTime>%llu</acquisitionTime>\r\n<fileStr>%s</fileStr>\r\n<fileExt>.jpg</fileExt>\r\n<attribute></attribute>\r\n</datas>\r\n</root>\r\n", \
 		dev_info.access_token, time_now, dev_info.mac, get_pic_time, pPicBase64);

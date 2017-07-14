@@ -42,7 +42,7 @@ int main()
 
 	init_dev_info();
 
-	elevator_get_token();//获取令牌
+	elevator_get_token(NULL);//获取令牌
 
 #if 1
 	pthread_t get_sensor_pthread_id;

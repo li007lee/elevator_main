@@ -12,7 +12,7 @@
 #define ALARM_PIC_PATH	"/tmp/Alarm/alarm.jpg"
 #define RM_ALARM_PIC_PATH "rm /tmp/Alarm/alarm.jpg"//删除原来的报警图
 
-int elevator_get_token();
+void *elevator_get_token(void *arg);
 void *thread_upload_picture(void *arg);
 
 void *thread_send_signal_to_http(void *arg);

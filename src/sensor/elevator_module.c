@@ -92,7 +92,9 @@ HB_VOID *elevator_recv_data_task(HB_VOID *param)
 			sleep(dev_info.sample_frequency);//采集传感器数据的频率
 			pthread_mutex_lock(&sensor_ctx.mutex_lock_data);
 			gettimeofday(&tv,NULL);
-			time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000;//取毫秒值
+//			time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000;//取毫秒值
+			//由于DVR的NTP校时时会把北京时间校为UTC时间，所以要取格林威治时间需要在此时间上减去8小时的秒数，28800000为8小时的毫秒数
+			time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000 - 28800000;//取毫秒值
 			snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|",
 								dev_info.mac, time_now,
 								sensor_ctx.accl_x, sensor_ctx.accl_y, \
@@ -139,7 +141,7 @@ HB_VOID *elevator_send_data_task(HB_VOID *param)
 {
 	HB_S32 iRet = 0;
 	HB_CHAR *send_msg = NULL;
-	UDP_HEADER stSendHeader;
+//	UDP_HEADER stSendHeader;
 	UDP_SERVER_INFO stUdpInfo;
 	HB_CHAR arrcServerIp[16] = {0};
 	HB_CHAR arrcRecvBuf[RECV_BUF_LEN] = {0};
@@ -195,10 +197,10 @@ CONNECT_AGAIG:
     		pthread_mutex_unlock(&(ele_data_list.list_mutex));
     	}
     	send_msg = ((SONSER_DATA_NODE_HANDLE)(ele_data_list.plist->p_head->p_value))->msg_buf;
-    	set_header(&stSendHeader, 9);
-    	iRet = send_udp_data(&stSendHeader, &stUdpInfo, send_msg, strlen(send_msg), 1);
-    	printf("Send::::sockfd=[%d], msg=[%s], strlen=[%d], sendlen=[%d]\n",\
-    					stUdpInfo.iSockFd, send_msg, strlen(send_msg), iRet);
+//    	set_header();
+    	iRet = send_udp_data(&stSensorHeader, &stUdpInfo, send_msg, strlen(send_msg), 1);
+    	printf("Send::::sockfd=[%d], sessionID:[%lld], msg=[%s], strlen=[%d], sendlen=[%d]\n",\
+    					stUdpInfo.iSockFd, stSensorHeader.lSessionId, send_msg, strlen(send_msg), iRet);
     	sensor_info.send_sensor_data_total_cout++;
     	if(-1 == iRet)//发送数据失败
     	{

@@ -19,6 +19,8 @@
 #include "udp_opt.h"
 #include "my_include.h"
 
+UDP_HEADER stSensorHeader; //传感器头结构体
+
 int create_socket_and_set_server(UDP_SERVER_INFO *stUdpServerInfo, char *pServerIp, int iServerPort)
 {
 	memset(stUdpServerInfo, 0, sizeof(UDP_SERVER_INFO));
@@ -59,23 +61,23 @@ int create_socket_and_set_server(UDP_SERVER_INFO *stUdpServerInfo, char *pServer
     return 0;
 }
 
-void set_header(UDP_HEADER *pHeader, int iContextType)
+void set_header()
 {
-	memset(pHeader, 0, sizeof(UDP_HEADER));
+	memset(&stSensorHeader, 0, sizeof(UDP_HEADER));
 
-	pHeader->cCode = 0XE1;	//校验码，固定为0xE1
-	pHeader->cMessageType = 1;//消息类型，固定为1
-	pHeader->cEncode = 0; //编码类型，固定为0,UTF-8
-	pHeader->cEncrypt = 0;//加密方式，暂时填0
-	pHeader->cContextType = iContextType;//发送的消息的方式：0(XML) 1(JSON) 6(二进制) 9(char)
-	pHeader->cEndian = 1; //扩展，用于对齐
+	stSensorHeader.cCode = 0XE1;	//校验码，固定为0xE1
+	stSensorHeader.cMessageType = 1;//消息类型，固定为1
+	stSensorHeader.cEncode = 0; //编码类型，固定为0,UTF-8
+	stSensorHeader.cEncrypt = 0;//加密方式，暂时填0
+	stSensorHeader.cContextType = 9;//发送的消息的方式：0(XML) 1(JSON) 6(二进制) 9(char)
+	stSensorHeader.cEndian = 1; //扩展，用于对齐
 #ifdef SYSTEM_32BITS
-	pHeader->lSessionId = atoll(dev_info.sessionId);//会话id
+	stSensorHeader.lSessionId = atoll(dev_info.sessionId);//会话id
 #else
-	pHeader->lSessionId = atol(dev_info.sessionId);//会话id
+	stSensorHeader.lSessionId = atol(dev_info.sessionId);//会话id
 #endif
-	pHeader->iSid = 0;//包序号
-	pHeader->sDataLen = 0; //数据长度
+	stSensorHeader.iSid = 0;//包序号
+//	stSensorHeader.sDataLen = 0; //数据长度
 
 	return;
 }

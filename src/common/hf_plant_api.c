@@ -12,6 +12,8 @@
 #include "md5gen.h"
 #include "hf_plant_api.h"
 #include "tcp_opt.h"
+#include "udp_opt.h"
+#include "file_opt.h"
 
 static HB_S32 fn_get_token_fun(xmlDoc *doc, void *param, HB_CHAR *tags, HB_CHAR *values)
 {
@@ -44,6 +46,11 @@ static HB_S32 fn_get_token_fun(xmlDoc *doc, void *param, HB_CHAR *tags, HB_CHAR 
 		else if(strstr(tags, "sessionId") != NULL)
 		{
 		    strcpy(dev_info.sessionId, values);
+#ifdef SYSTEM_32BITS
+		    stSensorHeader.lSessionId = atoll(dev_info.sessionId);//会话id
+#else
+		    stSensorHeader.lSessionId = atol(dev_info.sessionId);//会话id
+#endif
 		}
 	}
 
@@ -56,6 +63,7 @@ HB_S32 api_get_token(HB_S32 *sockfd, HB_CHAR *buff, HB_S32 size)
 {
 	struct timeval tv;
 	unsigned long long time_now;
+	HB_CHAR arrcElevatorCode[32] = {0};
 	HB_CHAR mac_sn[32] = {0};
 	HB_CHAR url_base[512] = {0};
 	HB_CHAR url[512] = {0};
@@ -72,14 +80,18 @@ HB_S32 api_get_token(HB_S32 *sockfd, HB_CHAR *buff, HB_S32 size)
     strncpy(url_base, "/OPEN_UNION/4QAEAAABAB4/IOT_GetAccessToken/?app_id=OPEN_BASE_APP", sizeof(url_base));
 
     get_sys_mac(mac_sn,sizeof(mac_sn));
-//    printf("mac_sn:[%s]\n", mac_sn);
 
 	gettimeofday(&tv,NULL);
-	time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000;//取毫秒值
+//	time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000;//取毫秒值
+	//由于DVR的NTP校时时会把北京时间校为UTC时间，所以要取格林威治时间需要在此时间上减去8小时的秒数，28800000为8小时的毫秒数
+	time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000 - 28800000;//取毫秒值
+
+	//获取电梯编号
+	GetIniKeyString(NULL, "elevator_code", arrcElevatorCode, ELEVATOR_CONFIG);
 
     snprintf(buf_body, sizeof(buf_body), \
-    	"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n\r\n<root>\r\n<access_token></access_token>\r\n<stamp>%llu</stamp>\r\n<datas>\r\n<sn>%s</sn>\r\n<elevatorId></elevatorId>\r\n</datas>\r\n</root>\r\n", \
-		time_now, mac_sn);
+    	"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n\r\n<root>\r\n<access_token></access_token>\r\n<stamp>%llu</stamp>\r\n<datas>\r\n<sn>%s</sn>\r\n<elevatorId>%s</elevatorId>\r\n</datas>\r\n</root>\r\n", \
+		time_now, mac_sn, arrcElevatorCode);
     //计算MD5值
     Calculate_MD5(desc, buf_body);
     //拼接发送字符串

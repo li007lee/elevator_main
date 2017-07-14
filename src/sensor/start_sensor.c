@@ -9,6 +9,7 @@
 
 #include "dev_opt.h"
 #include "elevator_module.h"
+#include "../common/udp_opt.h"
 
 HB_VOID *start_sensor(HB_VOID *arg)
 {
@@ -29,6 +30,7 @@ HB_VOID *start_sensor(HB_VOID *arg)
 
 	InitSensorGlobleVar();
 	elevator_data_list_init();
+	set_header();
 
 #if 1
 	pthread_t scanning_pthread_id;

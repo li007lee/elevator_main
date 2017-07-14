@@ -46,6 +46,8 @@ typedef struct _UDP_HEADER
 }UDP_HEADER;
 #pragma pack(pop)// 恢复对齐状态
 
+extern UDP_HEADER stSensorHeader; //传感器头结构体
+
 #define RECV_BUF_LEN	(2048)
 #define SEND_BUF_LEN	(4096)
 #define UDP_HEADER_LEN	sizeof(UDP_HEADER)
@@ -67,7 +69,7 @@ int create_socket_and_set_server(UDP_SERVER_INFO *stUdpServerInfo, char *pServer
  *
  * @return : 无
  ****************************************/
-void set_header(UDP_HEADER *pHeader, int iContextType);
+void set_header();
 
 /****************************************
  * Function: 用于设置udp通讯服务端的参数
