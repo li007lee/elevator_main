@@ -197,7 +197,15 @@ CONNECT_AGAIG:
     		pthread_mutex_unlock(&(ele_data_list.list_mutex));
     	}
     	send_msg = ((SONSER_DATA_NODE_HANDLE)(ele_data_list.plist->p_head->p_value))->msg_buf;
-//    	set_header();
+//		printf("stSensorHeader.cCode = [%X]\n", stSensorHeader.cCode);
+//		printf("stSensorHeader.cMessageType = [%d]\n", stSensorHeader.cMessageType);
+//		printf("stSensorHeader.cEncode = [%d]\n", stSensorHeader.cEncode);
+//		printf("stSensorHeader.cEncrypt = [%d]\n", stSensorHeader.cEncrypt);
+//		printf("stSensorHeader.cContextType = [%d]\n", stSensorHeader.cContextType);
+//		printf("stSensorHeader.cEndian = [%d]\n", stSensorHeader.cEndian);
+//		printf("stSensorHeader.lSessionId = [%lld]\n", stSensorHeader.lSessionId);
+//		printf("stSensorHeader.iSid = [%d]\n", stSensorHeader.iSid);
+//		printf("stSensorHeader.sDataLen=[%d]\n", stSensorHeader.sDataLen);
     	iRet = send_udp_data(&stSensorHeader, &stUdpInfo, send_msg, strlen(send_msg), 1);
     	printf("Send::::sockfd=[%d], sessionID:[%lld], msg=[%s], strlen=[%d], sendlen=[%d]\n",\
     					stUdpInfo.iSockFd, stSensorHeader.lSessionId, send_msg, strlen(send_msg), iRet);

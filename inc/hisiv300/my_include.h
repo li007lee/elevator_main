@@ -82,8 +82,12 @@ typedef enum _tagHB_BOOL
 //#define UDP_SERVER_IP "aegisci.ivview.com"
 
 //图片上传服务器
-#define PT_ADDR_IP  "elevator.hbydt.cn"
-#define PT_PORT     8088
+//#define PT_ADDR_IP  "elevator.hbydt.cn"
+//#define PT_PORT     8088
+//测试服务器，获取令牌（正式使用上面的）
+#define PT_ADDR_IP  "alarmtest.hbydt.net"
+#define PT_PORT     8001
+
 //传感器数据上传服务器
 //#define UDP_SERVER_IP "elevator.hbydt.cn"	//正式服务器
 #define UDP_SERVER_IP "alarmtest.hbydt.net" //测试服务器
@@ -96,6 +100,8 @@ typedef enum _tagHB_BOOL
 #define MAX_ERR_CRITICAL	10
 #define MAX_ERR_TIMES		3
 
+
+#define ELEVATOR_CONFIG "/mnt/mtd/etc/elevator.conf" //电梯配置文件路径
 #define PIC_MAX_SIZE	(102400) //图片最大为100K
 #define ETHX  "eth0"
 

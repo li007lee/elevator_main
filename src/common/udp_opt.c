@@ -105,14 +105,9 @@ static void big_endian_to_little_endian(void *num, VAL_TYPE type_len)
 			for (i=0, j=type_len-1;i<type_len;i++, j--)
 			{
 				tmp[i] = src_short_num>>bits_8*j;
-				//*((short *)num) += tmp[i];
-				//printf("tmp[%d]-------------------[%d]\n", i, tmp[i]);
 				dst_short_num += (short)(tmp[i] << i * bits_8);
 			}
-			//i = 0;
-			//return_num = (short)((tmp[0]<<0) + (tmp[1]<<8));
 			*((short *)num) = dst_short_num;
-			//printf("dst_short_num -------------------[%d]\n", *((short *)num));
 		}
 		break;
 		case INT:
@@ -134,14 +129,13 @@ static void big_endian_to_little_endian(void *num, VAL_TYPE type_len)
 #ifdef SYSTEM_32BITS
 			long long src_long_long_num = *((long long *)num);
 			long long dst_long_long_num = 0;
-			//printf("src_long_long_num -------------------[%lld]\n", src_long_long_num);
 			for (i=0, j=type_len-1; i<type_len; i++, j--)
 			{
-				tmp[i] = src_long_long_num>>bits_8*j;
-				dst_long_long_num += (long long)(tmp[i] << i * bits_8);
+				tmp[i] = src_long_long_num>>bits_8*i;
+				dst_long_long_num += ((long long)tmp[i] << (j * bits_8));
 			}
+			putchar('\n');
 			*((long long *)num) = dst_long_long_num;
-			//printf("dst_long_long_num -------------------[%lld]\n", *((long long *)num));
 #else
 			long src_long_num = *((int *)num);
 			long dst_long_num = 0;
@@ -294,6 +288,7 @@ int recv_udp_data(UDP_SERVER_INFO *stUdpServerInfo, char *pRecvBuf, int iBufLen,
 //		printf("stRecvHeader.lSessionId = [%lld]\n", stRecvHeader.lSessionId);
 //		printf("stRecvHeader.iSid = [%d]\n", stRecvHeader.iSid);
 //		printf("stRecvHeader.sDataLen=[%d]\n", stRecvHeader.sDataLen);
+
 		strncpy(pRecvBuf, tmpRecvBuf+UDP_HEADER_LEN, iReadLen-UDP_HEADER_LEN);
         //usleep(5000);
     }while ((iReadLen < 0) && (EINTR == errno));
