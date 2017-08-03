@@ -8,7 +8,7 @@
 #ifndef ALARM_UPLOAD_PIC_UPLOAD_PIC_H_
 #define ALARM_UPLOAD_PIC_UPLOAD_PIC_H_
 
-#define GET_PICTURE	"/usr/bin/get_picture300"
+#define GET_PICTURE	"/mnt/mtd/bin/elevator_get_picture300"
 #define ALARM_PIC_PATH	"/tmp/Alarm/alarm.jpg"
 #define RM_ALARM_PIC_PATH "rm /tmp/Alarm/alarm.jpg"//删除原来的报警图
 

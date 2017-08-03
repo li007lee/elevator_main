@@ -48,8 +48,8 @@ typedef struct _UDP_HEADER
 
 extern UDP_HEADER stSensorHeader; //传感器头结构体
 
-#define RECV_BUF_LEN	(2048)
-#define SEND_BUF_LEN	(4096)
+#define RECV_BUF_LEN	(1024)
+#define SEND_BUF_LEN	(1024)
 #define UDP_HEADER_LEN	sizeof(UDP_HEADER)
 
 /****************************************

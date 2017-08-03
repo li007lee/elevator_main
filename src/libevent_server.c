@@ -11,6 +11,7 @@
 
 #include "./common/common.h"
 #include "upload_pic.h"
+#include "alarm.h"
 
 #define LIBEVENT_LISTEN_PORT 25555
 
@@ -38,9 +39,9 @@ static void cmd_task_event_cb(struct bufferevent *bev, short events, void *args)
 // 读取回调函数
 static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 {
-//	char arrc_MsgType[32] = {0};
 	char arrcCommand[32] = {0};
 	char dataBuf[512] = {0};
+	int iHandAlarmBak = 0;//用于记录上一次手动报警的值
 
 	struct evbuffer *src = bufferevent_get_input(buf_bev);//获取输入缓冲区
 	int len = evbuffer_get_length(src);//获取输入缓冲区中数据的长度，也就是可以读取的长度。
@@ -56,35 +57,51 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 	}
 
 	analysis_json(dataBuf, "Command", arrcCommand, sizeof(arrcCommand));
-	//MsgType=Alarm&Number=0
-//	sscanf(dataBuf, "MsgType=%[^&]&Number=%s", arrc_MsgType, arrc_Value);
 	if (strncmp(arrcCommand, "Alarm", strlen("Alarm")) == 0) //报警消息
 	{
 		char arrcAlarmNum[2] = {0};
 		analysis_json(dataBuf, "Number", arrcAlarmNum, sizeof(arrcAlarmNum));
-		switch(atoi(arrcAlarmNum))
-		{
-			case 0: //手动报警
-			{
-				pthread_t thread_SendSignal = 0;
-				pthread_t thread_UploadPicId = 0;
-				pthread_create(&thread_SendSignal, NULL, thread_send_signal_to_http, NULL);
-				pthread_create(&thread_UploadPicId, NULL, thread_upload_picture, NULL);
 
-				usleep(500*1000);//等待线程创建
-				bufferevent_free(buf_bev);
-				break;
-			}
-			default:
-				break;
+		int iAlarmNum = atoi(arrcAlarmNum);
+//		报警信号接入定义
+//		上方
+//		左一：关门到位 	1
+//		左二：开门到位	3
+//		下方：
+//		左一：手动报警  0
+//		左二：平层		2
+
+//		手动报警		关门到位		平层		开门到位
+//			/				/			  /				/
+//		channel[00]=0 channel[01]=0 channel[02]=0 channel[03]=0
+//		stAlarmInfo.iHandAlarm = 0x1 & iAlarmNum;
+//		stAlarmInfo.iLevelling = 0x4 & iAlarmNum;
+//		stAlarmInfo.iDoorClose = 0x2 & iAlarmNum;
+//		stAlarmInfo.iDoorOpen = 0x8 & iAlarmNum;
+		stAlarmInfo.iSendFlag = 1;
+		stAlarmInfo.iHandAlarm = (0x1 & iAlarmNum);
+		stAlarmInfo.iLevelling = ((0x4 & iAlarmNum) >> 2);
+		stAlarmInfo.iDoorClose = ((0x2 & iAlarmNum) >> 1);
+		stAlarmInfo.iDoorOpen = ((0x8 & iAlarmNum) >> 3);
+
+		if ((stAlarmInfo.iHandAlarm) && (iHandAlarmBak != 1)) //新触发的手动报警
+		{
+			iHandAlarmBak = 1;
+			deal_hand_alarm();
 		}
+		else
+		{
+			iHandAlarmBak = 0;
+		}
+
+		bufferevent_free(buf_bev);
 	}
-	else if (strncmp(arrcCommand, "GetSensorInfo", strlen("GetSensorInfo")) == 0) //报警消息
+	else if (strncmp(arrcCommand, "GetSensorInfo", strlen("GetSensorInfo")) == 0) //获取传感器统计信息
 	{
 		bufferevent_write(buf_bev, &sensor_info, sizeof(sensor_info));
 //		bufferevent_free(buf_bev);
 	}
-	else if (strncmp(arrcCommand, "SetElevatorCode", strlen("GetSensorInfo")) == 0)
+	else if (strncmp(arrcCommand, "SetElevatorCode", strlen("SetElevatorCode")) == 0)
 	{
 		//设置了电梯编号，需要重新获取令牌
 		pthread_attr_t attr;

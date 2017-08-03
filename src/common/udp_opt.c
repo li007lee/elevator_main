@@ -227,8 +227,7 @@ int recv_udp_data(UDP_SERVER_INFO *stUdpServerInfo, char *pRecvBuf, int iBufLen,
 	int iReadLen = 0;
 	int ret;
 	fd_set fdread;
-	//static char tmpRecvBuf[RECV_BUF_LEN] = {0};
-	char *tmpRecvBuf = malloc(iBufLen+UDP_HEADER_LEN);
+	static char tmpRecvBuf[RECV_BUF_LEN] = {0};
 
 	memset(tmpRecvBuf, 0, RECV_BUF_LEN);
 	memset(&stRecvHeader, 0, UDP_HEADER_LEN);
@@ -248,26 +247,21 @@ int recv_udp_data(UDP_SERVER_INFO *stUdpServerInfo, char *pRecvBuf, int iBufLen,
     if (0 == ret)		// 超时
     {
     	TRACE_LOG("select timeout!\n");
-    	free(tmpRecvBuf);
         return -1;
     }
     else if (ret < 0)	// 出错
     {
     	TRACE_ERR("select error!\n");
-    	free(tmpRecvBuf);
         return -2;
     }
     do
     {
-		//int iRecvLength = (RECV_BUF_LEN < iBufLen) ? RECV_BUF_LEN : iBufLen+UDP_HEADER_LEN;
-		//printf("iRecvLength = %d\n", iRecvLength);
 		iReadLen = recvfrom(stUdpServerInfo->iSockFd, tmpRecvBuf, iBufLen+UDP_HEADER_LEN, 0, \
 						(struct sockaddr*)&stUdpServerInfo->addr, \
 						(socklen_t*)(&stUdpServerInfo->sockaddr_in_len));
 		if (0 == iReadLen)
 		{
 			TRACE_ERR("Recv Closed! retval= %d\n", iReadLen);
-			free(tmpRecvBuf);
 			return 0;
 		}
 		memcpy(&stRecvHeader, tmpRecvBuf, UDP_HEADER_LEN);
@@ -293,7 +287,6 @@ int recv_udp_data(UDP_SERVER_INFO *stUdpServerInfo, char *pRecvBuf, int iBufLen,
         //usleep(5000);
     }while ((iReadLen < 0) && (EINTR == errno));
 
-    free(tmpRecvBuf);
     return iReadLen;
 }
 

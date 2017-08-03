@@ -136,7 +136,6 @@ int Calculate_MD5(char *desc, const char *src)
 }
 
 
-//获取网卡序列号
 //mac_sn 网卡序列号, dev 网卡名
 static HB_S32 get_mac_dev(HB_CHAR *mac_sn, HB_CHAR *dev)
 {

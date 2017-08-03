@@ -11,6 +11,7 @@
 #include "sensor_opt.h"
 #include "../common/tcp_opt.h"
 #include "../common/udp_opt.h"
+#include "../alarm.h"
 
 HB_VOID *create_sensor_data_node()
 {
@@ -95,11 +96,25 @@ HB_VOID *elevator_recv_data_task(HB_VOID *param)
 //			time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000;//取毫秒值
 			//由于DVR的NTP校时时会把北京时间校为UTC时间，所以要取格林威治时间需要在此时间上减去8小时的秒数，28800000为8小时的毫秒数
 			time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000 - 28800000;//取毫秒值
-			snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|",
-								dev_info.mac, time_now,
-								sensor_ctx.accl_x, sensor_ctx.accl_y, \
-								sensor_ctx.accl_z, sensor_ctx.gyro_x, \
-								sensor_ctx.gyro_y, sensor_ctx.gyro_z);
+			if (stAlarmInfo.iSendFlag)
+			{
+				snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|%d|%d|%d|%d|",
+									dev_info.mac, time_now,
+									sensor_ctx.accl_x, sensor_ctx.accl_y, \
+									sensor_ctx.accl_z, sensor_ctx.gyro_x, \
+									sensor_ctx.gyro_y, sensor_ctx.gyro_z, \
+									stAlarmInfo.iHandAlarm, stAlarmInfo.iLevelling, \
+									stAlarmInfo.iDoorClose, stAlarmInfo.iDoorOpen);
+				stAlarmInfo.iSendFlag = 0;
+			}
+			else
+			{
+				snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|",
+									dev_info.mac, time_now,
+									sensor_ctx.accl_x, sensor_ctx.accl_y, \
+									sensor_ctx.accl_z, sensor_ctx.gyro_x, \
+									sensor_ctx.gyro_y, sensor_ctx.gyro_z);
+			}
 			printf("recv_sensor_data:[%s]\n", sensor_data);
 			pthread_mutex_unlock(&sensor_ctx.mutex_lock_data);
 

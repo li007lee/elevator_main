@@ -235,6 +235,7 @@ void *thread_upload_picture(void *arg)
 	pthread_detach(pthread_self());
 	int fail_times = 0;
 	int pic_size = 0;
+	struct timeval tv;
 	unsigned long long get_pic_time = 0;
 	char arrc_PictureBuf[PIC_MAX_SIZE] = {0};
 	char arrc_PictureBufBase64[PIC_MAX_SIZE*3] = {0};
@@ -254,6 +255,9 @@ void *thread_upload_picture(void *arg)
 		}
 		else
 		{
+			gettimeofday(&tv,NULL);
+			//由于DVR的NTP校时时会把北京时间校为UTC时间，所以要取格林威治时间需要在此时间上减去8小时的秒数，28800000为8小时的毫秒数
+			get_pic_time = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000 - 28800000;//取毫秒值
 			break;
 		}
 	}

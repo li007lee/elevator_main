@@ -39,7 +39,7 @@ LIBS :=  -L../lib/hisiv300 \
 			-lavcodec -lavfilter -lswscale -lavutil -lswresample -lm -ldl -lpthread -lrt
 
 DEST_BIN_LOCAL = ../bin
-DEST_BIN = /mnt/hgfs/share_dir/nfs_dir
+DEST_BIN = /mnt/hgfs/share_dir/nfs_dir/elevator
 APPBIN = elevator_main300
 endif
 
