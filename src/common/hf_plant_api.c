@@ -130,7 +130,7 @@ int Calculate_MD5(char *desc, const char *src)
 	char buf[102400] = {0};
 
 	snprintf(buf, sizeof(buf), "%skWbe3Nah3hjNpNdcRwlPtg", src);
-	md5_packages_string(desc, buf);
+	md5_packages_string(desc, buf, strlen(buf));
 
 	return 1;
 }

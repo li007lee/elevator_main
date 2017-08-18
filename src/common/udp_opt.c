@@ -21,7 +21,7 @@
 
 UDP_HEADER stSensorHeader; //传感器头结构体
 
-int create_socket_and_set_server(UDP_SERVER_INFO *stUdpServerInfo, char *pServerIp, int iServerPort)
+int create_socket_and_connect_server(UDP_SERVER_INFO *stUdpServerInfo, char *pServerIp, int iServerPort)
 {
 	memset(stUdpServerInfo, 0, sizeof(UDP_SERVER_INFO));
     if(stUdpServerInfo->iSockFd <= 0)

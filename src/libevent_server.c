@@ -96,22 +96,22 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 
 		bufferevent_free(buf_bev);
 	}
-	else if (strncmp(arrcCommand, "GetSensorInfo", strlen("GetSensorInfo")) == 0) //获取传感器统计信息
-	{
-		bufferevent_write(buf_bev, &sensor_info, sizeof(sensor_info));
-//		bufferevent_free(buf_bev);
-	}
-	else if (strncmp(arrcCommand, "SetElevatorCode", strlen("SetElevatorCode")) == 0)
-	{
-		//设置了电梯编号，需要重新获取令牌
-		pthread_attr_t attr;
-		pthread_t get_token_pthread_id;
-		pthread_attr_init(&attr);
-		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-		pthread_create(&get_token_pthread_id, &attr, elevator_get_token, NULL);
-		pthread_attr_destroy(&attr);
-		usleep(200*1000);
-	}
+//	else if (strncmp(arrcCommand, "GetSensorInfo", strlen("GetSensorInfo")) == 0) //获取传感器统计信息
+//	{
+//		bufferevent_write(buf_bev, &sensor_info, sizeof(sensor_info));
+////		bufferevent_free(buf_bev);
+//	}
+//	else if (strncmp(arrcCommand, "SetElevatorCode", strlen("SetElevatorCode")) == 0)
+//	{
+//		//设置了电梯编号，需要重新获取令牌
+//		pthread_attr_t attr;
+//		pthread_t get_token_pthread_id;
+//		pthread_attr_init(&attr);
+//		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+//		pthread_create(&get_token_pthread_id, &attr, elevator_get_token, NULL);
+//		pthread_attr_destroy(&attr);
+//		usleep(200*1000);
+//	}
 
 	return;
 }

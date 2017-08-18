@@ -13,7 +13,7 @@
 
 HB_VOID *start_sensor(HB_VOID *arg)
 {
-	pthread_detach(pthread_self());
+//	pthread_detach(pthread_self());
 	pthread_attr_t attr;
 
 	while (1)

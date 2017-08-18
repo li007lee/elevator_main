@@ -11,6 +11,7 @@
 #include "./common/hf_plant_api.h"
 #include "./sensor/start_sensor.h"
 #include "upload_pic.h"
+#include "./udp_server/udp_server.h"
 
 extern void start_listening();
 
@@ -49,6 +50,14 @@ int main()
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 	pthread_create(&get_sensor_pthread_id, &attr, start_sensor, NULL);
+	pthread_attr_destroy(&attr);
+#endif
+
+#if 1
+	pthread_t start_udp_server_thread_id;
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+	pthread_create(&start_udp_server_thread_id, &attr, thread_udp_server, NULL);
 	pthread_attr_destroy(&attr);
 #endif
 

@@ -50,6 +50,7 @@ int GetIniKeyString(char *AppName, char *KeyName, char *ReturnValue, char *filen
 		rtnval = fgetc(fp);
 		if (rtnval == EOF)
 		{
+			printf("file eof!\n");
 			break;
 		}
 		else

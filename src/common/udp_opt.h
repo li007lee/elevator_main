@@ -60,7 +60,7 @@ extern UDP_HEADER stSensorHeader; //传感器头结构体
  *
  * @return : 成功返回0， 失败返回-1
  ****************************************/
-int create_socket_and_set_server(UDP_SERVER_INFO *stUdpServerInfo, char *pServerIp, int iServerPort);
+int create_socket_and_connect_server(UDP_SERVER_INFO *stUdpServerInfo, char *pServerIp, int iServerPort);
 
 /****************************************
  * Function: 用于设置通讯头信息

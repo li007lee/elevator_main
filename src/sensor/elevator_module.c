@@ -96,6 +96,7 @@ HB_VOID *elevator_recv_data_task(HB_VOID *param)
 //			time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000;//取毫秒值
 			//由于DVR的NTP校时时会把北京时间校为UTC时间，所以要取格林威治时间需要在此时间上减去8小时的秒数，28800000为8小时的毫秒数
 			time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000 - 28800000;//取毫秒值
+#if 0
 			if (stAlarmInfo.iSendFlag)
 			{
 				snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|%d|%d|%d|%d|",
@@ -115,6 +116,15 @@ HB_VOID *elevator_recv_data_task(HB_VOID *param)
 									sensor_ctx.accl_z, sensor_ctx.gyro_x, \
 									sensor_ctx.gyro_y, sensor_ctx.gyro_z);
 			}
+#else
+			snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|%d|%d|%d|%d|",
+								dev_info.mac, time_now,
+								sensor_ctx.accl_x, sensor_ctx.accl_y, \
+								sensor_ctx.accl_z, sensor_ctx.gyro_x, \
+								sensor_ctx.gyro_y, sensor_ctx.gyro_z, \
+								stAlarmInfo.iHandAlarm, stAlarmInfo.iLevelling, \
+								stAlarmInfo.iDoorClose, stAlarmInfo.iDoorOpen);
+#endif
 			printf("recv_sensor_data:[%s]\n", sensor_data);
 			pthread_mutex_unlock(&sensor_ctx.mutex_lock_data);
 
@@ -174,7 +184,7 @@ RETRY:
 
 #if 0
 	char *msg = "{\"DataType\":\"accl\",\"MAC\":\"621c7e758524\",\"DataTime\":6398,\"X\":-0.067,\"Y\":0.303,\"Z\":0.000}";
-	create_socket_and_set_server(&stSendHeader, UDP_SERVER_IP, UDP_SERVER_PORT);
+	create_socket_and_connect_server(&stSendHeader, UDP_SERVER_IP, UDP_SERVER_PORT);
 	while(1)
 	{
     	set_header(&stSendHeader, 9, 0);
@@ -195,7 +205,7 @@ RETRY:
 	}
 #else
 CONNECT_AGAIG:
-	if (create_socket_and_set_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT) < 0)
+	if (create_socket_and_connect_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT) < 0)
 	{
 		printf("connect to udp server failed!\n");
 		sleep(3);
@@ -229,7 +239,7 @@ CONNECT_AGAIG:
     	{
     		sleep(2);
     		close_udp(&stUdpInfo);
-    		create_socket_and_set_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT);
+    		create_socket_and_connect_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT);
     		continue;
     	}
     	else
@@ -243,7 +253,7 @@ CONNECT_AGAIG:
     			sensor_info.send_sensor_data_resend_count++;
     			printf("Recv::::recv[%d]:[%s]\n", iRet, arrcRecvBuf);
         		close_udp(&stUdpInfo);
-        		create_socket_and_set_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT);
+        		create_socket_and_connect_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT);
     		}
     		else
     		{

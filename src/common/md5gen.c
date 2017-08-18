@@ -58,14 +58,14 @@ static int password_compare(char *password, const char *pw)
 	return 0;
 }
 */
-int md5_packages_string(char *desc_str, char *src_str)
+int md5_packages_string(char *desc_str, char *src_str, int src_str_len)
 {
 	MD5_CTX Md5Ctx;
 //	char md5_pw[256];
 	HASH HA1;
 
 	MD5Init(&Md5Ctx);	//初始化
-	MD5Update(&Md5Ctx, (unsigned char *)src_str, strlen(src_str)); //md5加密
+	MD5Update(&Md5Ctx, (unsigned char *)src_str, src_str_len); //md5加密
 	MD5Final(HA1, &Md5Ctx); //将加密后的密文放到HA1
 	CvtHex(HA1, desc_str); //将HA1转换为字符串存储
     return 1;
