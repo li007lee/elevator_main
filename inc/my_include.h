@@ -78,30 +78,23 @@ typedef enum _tagHB_BOOL
 #define HB_SUCCESS  0
 #define HB_FAILURE  -1
 
-//#define UDP_SERVER_IP "alarmtest.hbydt.net"		//(139.217.17.108)
-//#define UDP_SERVER_IP "aegisci.ivview.com"
+//#define TEST_VERSION
 
-
+#ifdef TEST_VERSION
 //本地测试
 #define PT_ADDR_IP  "alarmtest.hbydt.net"
 #define PT_PORT     8001
 #define UDP_SERVER_IP "alarmtest.hbydt.net" //测试服务器
 #define UDP_SERVER_PORT 9001
 
-//正是发布
-//#define PT_ADDR_IP  "elevator.hbydt.cn" //图片上传服务器
-//#define PT_PORT     8088
-//#define UDP_SERVER_IP "elevator.hbydt.cn"	//传感器数据上传服务器
-//#define UDP_SERVER_PORT 9001
+#else
+//正式发布
+#define PT_ADDR_IP  "elevator.hbydt.cn" //图片上传服务器
+#define PT_PORT     8088
+#define UDP_SERVER_IP "elevator.hbydt.cn"	//传感器数据上传服务器
+#define UDP_SERVER_PORT 9001
 
-//测试服务器，获取令牌（正式使用上面的）
-//#define PT_ADDR_IP  "alarmtest.hbydt.net"
-//#define PT_PORT     8001
-//传感器数据上传服务器
-//#define UDP_SERVER_IP "elevator.hbydt.cn"	//正式服务器
-//#define UDP_SERVER_IP "alarmtest.hbydt.net" //测试服务器
-//#define UDP_SERVER_PORT 9001
-
+#endif
 
 //报警到来发送信号到服务器
 #define PT_Alarm_ADDR_IP  "www.chorstar.com" //发送到中融智达服务器
@@ -110,11 +103,12 @@ typedef enum _tagHB_BOOL
 
 
 #define UDP_SERVER_LISTEN_PORT	8899
-#define ELEVATOR_CONFIG "/mnt/mtd/etc/elevator.conf" //配置文件路径
-//#define ELEVATOR_VERSION_PATH "/usr/elevator_version" //配置文件路径
-#define ELEVATOR_VERSION_PATH "/mnt/mtd/nfs_dir/elevator/elevator_version" //配置文件路径
+//#define ELEVATOR_CONFIG "/mnt/mtd/etc/elevator.conf" //电梯配置文件路径
+#define ELEVATOR_VERSION_PATH "/usr/etc/elevator_version" //配置文件路径
+#define GET_PICTURE	"/usr/bin/elevator_get_picture300"
 #define ALARM_PHOTO_PATH	"/tmp/Alarm/alarm.jpg"	//报警图片位置
 #define RM_ALARM_PHOTO "rm /tmp/Alarm/alarm.jpg"
+
 #define ETHX  "eth0"
 
 
@@ -122,7 +116,6 @@ typedef enum _tagHB_BOOL
 #define MAX_ERR_TIMES		3
 
 
-#define ELEVATOR_CONFIG "/mnt/mtd/etc/elevator.conf" //电梯配置文件路径
 #define PIC_MAX_SIZE	(102400) //图片最大为100K
 #define ETHX  "eth0"
 
@@ -135,7 +128,6 @@ typedef struct _tagDEV_INFO//设备信息结构体
     HB_CHAR sn[32];		//设备序列号
     HB_CHAR access_token[64]; //获取到的token
     HB_CHAR sessionId[64];	//上传传感器数据是需要的sessionId
-
 }DEV_INFO_OBJ, *DEV_INFO_HANDLE;
 
 typedef struct _SENSOR_INFO
@@ -146,10 +138,24 @@ typedef struct _SENSOR_INFO
 	HB_U32 send_sensor_data_resend_count; //传感器数据重发的总次数
 	HB_U32 send_sensor_data_miss_count; //缓冲区满后丢包总次数
 	HB_U32 alarm_pic_upload_count; //报警图片上传成功总张数
+
+	//用于测试传感器是否已经正确安装，如果收到的数据发生了0到1 或 1到0的变化则视为已经正确安装。
+	HB_S32	door_closed_ok_flag;	//关门到位测试成功标志
+	HB_S32	door_opened_ok_flag;	//开门到位测试成功标志
+	HB_S32	levelling_ok_flag;	//平层测试成功标志。
 }SENSOR_INFO;
+
+//电梯属性结构体
+typedef struct _ELEVATOR_PROPERTIES
+{
+	HB_CHAR elevator_id[64];	//电梯编号
+	HB_CHAR elevator_sim[32]; //电梯盒子中的sim卡卡号
+	HB_CHAR elevator_addr[256]; //电梯盒子安装位置
+}ELEVATOR_PROPERTIES;
 
 extern DEV_INFO_OBJ dev_info;
 extern SENSOR_INFO sensor_info;
+extern ELEVATOR_PROPERTIES elevator_properties;
 
 #define DEBUG
 #ifdef DEBUG

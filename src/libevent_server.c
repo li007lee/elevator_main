@@ -41,7 +41,11 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 {
 	char arrcCommand[32] = {0};
 	char dataBuf[512] = {0};
-	int iHandAlarmBak = 0;//用于记录上一次手动报警的值
+	int iLevelling = 0;//用于记录当前平层的值
+	static int iHandAlarmBak = 0;//用于记录上一次手动报警的值
+	static int iLevellingBak = 0;//用于记录上一次平层的值
+	static int iDoorCloseBak = 0;//用于记录上一次关门到位的值
+	static int iDoorOpenBak = 0;//用于记录上一次开门到位的值
 
 	struct evbuffer *src = bufferevent_get_input(buf_bev);//获取输入缓冲区
 	int len = evbuffer_get_length(src);//获取输入缓冲区中数据的长度，也就是可以读取的长度。
@@ -74,15 +78,45 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 //		手动报警		关门到位		平层		开门到位
 //			/				/			  /				/
 //		channel[00]=0 channel[01]=0 channel[02]=0 channel[03]=0
-//		stAlarmInfo.iHandAlarm = 0x1 & iAlarmNum;
-//		stAlarmInfo.iLevelling = 0x4 & iAlarmNum;
-//		stAlarmInfo.iDoorClose = 0x2 & iAlarmNum;
-//		stAlarmInfo.iDoorOpen = 0x8 & iAlarmNum;
-		stAlarmInfo.iSendFlag = 1;
+
+//		stAlarmInfo.iSendFlag = 1;
 		stAlarmInfo.iHandAlarm = (0x1 & iAlarmNum);
-		stAlarmInfo.iLevelling = ((0x4 & iAlarmNum) >> 2);
+//		stAlarmInfo.iLevelling = ((0x4 & iAlarmNum) >> 2);
+		iLevelling = ((0x4 & iAlarmNum) >> 2);
 		stAlarmInfo.iDoorClose = ((0x2 & iAlarmNum) >> 1);
 		stAlarmInfo.iDoorOpen = ((0x8 & iAlarmNum) >> 3);
+
+		if (iLevellingBak!=iLevelling)
+		{
+			sensor_info.levelling_ok_flag = 1;
+			iLevellingBak = iLevelling;
+
+			if (stAlarmInfo.iLevellingSendFlag == 0)
+			{
+				stAlarmInfo.iLevelling2 = iLevelling;
+			}
+			else
+			{
+				stAlarmInfo.iLevelling = iLevelling;
+				stAlarmInfo.iLevelling2 = iLevelling;
+			}
+
+			stAlarmInfo.iLevellingSendFlag = 0;
+
+		}
+
+		if (iDoorCloseBak!=stAlarmInfo.iDoorClose)
+		{
+			sensor_info.door_closed_ok_flag = 1;
+			iDoorCloseBak = stAlarmInfo.iDoorClose;
+		}
+
+		if (iDoorOpenBak!=stAlarmInfo.iDoorOpen)
+		{
+			sensor_info.door_opened_ok_flag = 1;
+			iDoorOpenBak = stAlarmInfo.iDoorOpen;
+		}
+
 
 		if ((stAlarmInfo.iHandAlarm) && (iHandAlarmBak != 1)) //新触发的手动报警
 		{

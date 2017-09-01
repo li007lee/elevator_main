@@ -52,6 +52,18 @@ static HB_S32 fn_get_token_fun(xmlDoc *doc, void *param, HB_CHAR *tags, HB_CHAR 
 		    stSensorHeader.lSessionId = atol(dev_info.sessionId);//会话id
 #endif
 		}
+		else if (strstr(tags, "elevatorId") != NULL)
+		{
+			strncpy(elevator_properties.elevator_id, values, sizeof(elevator_properties.elevator_id));
+		}
+		else if (strstr(tags, "address") != NULL)
+		{
+			strncpy(elevator_properties.elevator_addr, values, sizeof(elevator_properties.elevator_addr));
+		}
+		else if (strstr(tags, "simId") != NULL)
+		{
+			strncpy(elevator_properties.elevator_sim, values, sizeof(elevator_properties.elevator_sim));
+		}
 	}
 
 	return 1;
@@ -63,7 +75,7 @@ HB_S32 api_get_token(HB_S32 *sockfd, HB_CHAR *buff, HB_S32 size)
 {
 	struct timeval tv;
 	unsigned long long time_now;
-	HB_CHAR arrcElevatorCode[32] = {0};
+//	HB_CHAR arrcElevatorCode[32] = {0};
 	HB_CHAR mac_sn[32] = {0};
 	HB_CHAR url_base[512] = {0};
 	HB_CHAR url[512] = {0};
@@ -87,11 +99,11 @@ HB_S32 api_get_token(HB_S32 *sockfd, HB_CHAR *buff, HB_S32 size)
 	time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000 - 28800000;//取毫秒值
 
 	//获取电梯编号
-	GetIniKeyString(NULL, "elevator_code", arrcElevatorCode, ELEVATOR_CONFIG);
+//	GetIniKeyString(NULL, "elevator_code", arrcElevatorCode, ELEVATOR_CONFIG);
 
     snprintf(buf_body, sizeof(buf_body), \
     	"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n\r\n<root>\r\n<access_token></access_token>\r\n<stamp>%llu</stamp>\r\n<datas>\r\n<sn>%s</sn>\r\n<elevatorId>%s</elevatorId>\r\n</datas>\r\n</root>\r\n", \
-		time_now, mac_sn, arrcElevatorCode);
+		time_now, mac_sn, elevator_properties.elevator_id);
     //计算MD5值
     Calculate_MD5(desc, buf_body);
     //拼接发送字符串

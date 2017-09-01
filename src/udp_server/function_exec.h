@@ -16,7 +16,7 @@ int analysis_json(HB_CHAR *pSrcJson, HB_CHAR *pKey, HB_CHAR *pValue, HB_S32 iVal
 //获取电梯配置
 HB_VOID get_elevator_config(UDP_CLIENT_INFO_HANDLE pUdpClient, HB_CHAR *pSaveKey);
 //设置电梯配置
-int set_elevator_config(UDP_CLIENT_INFO_HANDLE pUdpClient, HB_CHAR *pKey, HB_CHAR *pSaveKey);
+int set_elevator_config(UDP_CLIENT_INFO_HANDLE pUdpClient, HB_CHAR *pKey);
 //测试网络连接
 int get_net_status(UDP_CLIENT_INFO_HANDLE pUdpClient);
 //获取电梯程序运行状态

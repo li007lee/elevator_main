@@ -24,15 +24,15 @@ static void *deal_cmd_thread(void *arg)
 	if (strcmp(arrcCmd, "get_elevator_code") == 0)//获取电梯编号
 		get_elevator_config(pUdpClient, "elevator_code");
 	else if (strcmp(arrcCmd, "set_elevator_code") == 0)//设置电梯编号
-		set_elevator_config(pUdpClient, "elevator_id", "elevator_code");
+		set_elevator_config(pUdpClient, "elevator_id");
 	else if (strcmp(arrcCmd, "get_elevator_sim") == 0) //获取SIM卡号
 		get_elevator_config(pUdpClient, "elevator_sim");
 	else if (strcmp(arrcCmd, "set_sim_card") == 0) //设置SIM卡号
-		set_elevator_config(pUdpClient, "sim_card", "elevator_sim");
+		set_elevator_config(pUdpClient, "sim_card");
 	else if (strcmp(arrcCmd, "get_elevator_address") == 0) //获取盒子安装位置
 		get_elevator_config(pUdpClient, "elevator_addr");
 	else if (strcmp(arrcCmd, "set_elevator_address") == 0) //设置盒子安装位置
-		set_elevator_config(pUdpClient, "address", "elevator_addr");
+		set_elevator_config(pUdpClient, "address");
 	else if (strcmp(arrcCmd, "get_net_status") == 0)	//获取网络状态
 		get_net_status(pUdpClient);
 	else if (strcmp(arrcCmd, "get_program_status") == 0) //获取电梯程序运行状态
@@ -43,11 +43,41 @@ static void *deal_cmd_thread(void *arg)
 		get_data_upload_info(pUdpClient);
 	else if (strcmp(arrcCmd, "get_version") == 0) //获取电梯型号及版本号信息
 		get_version(pUdpClient);
+	else if (strcmp(arrcCmd, "get_alarm_in_status") == 0) //获取报警输入信号状态
+	{
+		HB_CHAR arrcAlarmType[32] = {0};
+		HB_CHAR arrcReturnJson[SEND_BUF_LEN] = {0};
+		analysis_json(pUdpClient->arrcRecvBuf, "alarm_type", arrcAlarmType, sizeof(arrcAlarmType));
+
+		if (strcmp(arrcAlarmType, "get_door_open_status") == 0)
+		{
+			//开门到位
+			snprintf(arrcReturnJson, sizeof(arrcReturnJson), \
+				"{\"code\":\"0\",\"msg\":\"获取成功\",\"status\":\"%d\"}", \
+				sensor_info.door_opened_ok_flag);
+		}
+		else if (strcmp(arrcAlarmType, "get_door_close_status") == 0)
+		{
+			//关门到位
+			snprintf(arrcReturnJson, sizeof(arrcReturnJson), \
+				"{\"code\":\"0\",\"msg\":\"获取成功\",\"status\":\"%d\"}", \
+				sensor_info.door_closed_ok_flag);
+		}
+		else if (strcmp(arrcAlarmType, "get_levelling_status") == 0)
+		{
+			//平层信号
+			snprintf(arrcReturnJson, sizeof(arrcReturnJson), \
+				"{\"code\":\"0\",\"msg\":\"获取成功\",\"status\":\"%d\"}", \
+				sensor_info.levelling_ok_flag);
+		}
+
+		server_send_udp_data(&stUdpServerInfo, pUdpClient, arrcReturnJson, strlen(arrcReturnJson), 0);
+	}
 	else
 	{
 		HB_CHAR arrcReturnJson[64] = {0};
 		strncpy(arrcReturnJson, "{\"code\":\"-30007\",\"msg\":\"Command有误\"}", sizeof(arrcReturnJson));
-		server_send_udp_data(&stUdpServerInfo, pUdpClient, arrcReturnJson, strlen(arrcReturnJson), 2);
+		server_send_udp_data(&stUdpServerInfo, pUdpClient, arrcReturnJson, strlen(arrcReturnJson), 0);
 		printf("Command error!\n");
 	}
 	free(pUdpClient);
@@ -56,7 +86,7 @@ static void *deal_cmd_thread(void *arg)
 
 void *thread_udp_server(void *arg)
 {
-	pthread_detach(pthread_self());
+//	pthread_detach(pthread_self());
 	pthread_mutex_init(&(stUdpServerInfo.mutexLock), NULL);
 	create_socket_and_set_server(&stUdpServerInfo, UDP_SERVER_LISTEN_PORT);
 	while (1)

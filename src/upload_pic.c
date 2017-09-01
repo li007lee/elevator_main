@@ -94,8 +94,8 @@ static int read_pic(char *pSavePicBuf, int iSavePicBufSize)
 	FILE *fp = NULL;
 	int total_len = 0;
 
-	printf("%s\n",ALARM_PIC_PATH);
-	fp=fopen(ALARM_PIC_PATH,"rb");
+	printf("%s\n",ALARM_PHOTO_PATH);
+	fp=fopen(ALARM_PHOTO_PATH,"rb");
 	total_len=fread(pSavePicBuf, 1, iSavePicBufSize, fp);
 	fclose(fp);
 	fp = NULL;
@@ -240,11 +240,11 @@ void *thread_upload_picture(void *arg)
 	char arrc_PictureBuf[PIC_MAX_SIZE] = {0};
 	char arrc_PictureBufBase64[PIC_MAX_SIZE*3] = {0};
 
-	system(RM_ALARM_PIC_PATH);
+	system(RM_ALARM_PHOTO);
 	while(1)
 	{
 		system(GET_PICTURE);
-		if (access(ALARM_PIC_PATH, 0) < 0)//文件不存在
+		if (access(ALARM_PHOTO_PATH, 0) < 0)//文件不存在
 		{
 			fail_times++;
 			if (fail_times>=MAX_ERR_TIMES)

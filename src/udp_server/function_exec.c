@@ -25,22 +25,21 @@ extern LOCAL_UDP_SERVER_INFO stUdpServerInfo;
  ****************************************/
 void get_elevator_config(UDP_CLIENT_INFO_HANDLE pUdpClient, HB_CHAR *pSaveKey)
 {
-	HB_CHAR	arrcElevatorValue[512] = {0};
 	HB_CHAR arrcReturnJson[SEND_BUF_LEN] = {0};
 
-	GetIniKeyString(NULL, pSaveKey, arrcElevatorValue, ELEVATOR_CONFIG);
+//	GetIniKeyString(NULL, pSaveKey, arrcElevatorValue, ELEVATOR_CONFIG);
 
 	if (strcmp(pSaveKey, "elevator_code") == 0)
 	{
-		snprintf(arrcReturnJson, sizeof(arrcReturnJson), "{\"code\":\"0\",\"msg\":\"获取成功\",\"elevator_id\":\"%s\"}", arrcElevatorValue);
+		snprintf(arrcReturnJson, sizeof(arrcReturnJson), "{\"code\":\"0\",\"msg\":\"获取成功\",\"elevator_id\":\"%s\"}", elevator_properties.elevator_id);
 	}
 	else if (strcmp(pSaveKey, "elevator_sim") == 0)
 	{
-		snprintf(arrcReturnJson, sizeof(arrcReturnJson), "{\"code\":\"0\",\"msg\":\"获取成功\",\"sim_card\":\"%s\"}", arrcElevatorValue);
+		snprintf(arrcReturnJson, sizeof(arrcReturnJson), "{\"code\":\"0\",\"msg\":\"获取成功\",\"sim_card\":\"%s\"}", elevator_properties.elevator_sim);
 	}
 	else if (strcmp(pSaveKey, "elevator_addr") == 0)
 	{
-		snprintf(arrcReturnJson, sizeof(arrcReturnJson), "{\"code\":\"0\",\"msg\":\"获取成功\",\"address\":\"%s\"}", arrcElevatorValue);
+		snprintf(arrcReturnJson, sizeof(arrcReturnJson), "{\"code\":\"0\",\"msg\":\"获取成功\",\"address\":\"%s\"}", elevator_properties.elevator_addr);
 	}
 	server_send_udp_data(&stUdpServerInfo, pUdpClient, arrcReturnJson, strlen(arrcReturnJson), 0);
 }
@@ -49,12 +48,11 @@ void get_elevator_config(UDP_CLIENT_INFO_HANDLE pUdpClient, HB_CHAR *pSaveKey)
 /****************************************
  * Function: 设置电梯相关参数（电梯编号，SIM卡号，安装位置）
  * @param pUdpClient: [IN]UDP客户端的信息结构体
- * @param pKey: [IN]需要设置的类型选项（elevator_id，sim_card，address）
- * @param pSaveKey: [IN] 存储在本地文件的key信息（elevator_code，elevator_sim，elevator_addr）
+ * @param pKey: [IN]需要设置的类型选项（elevator_id，elevator_sim，address）
  *
  * @return : 成功返回0,失败返回-1
  ****************************************/
-int set_elevator_config(UDP_CLIENT_INFO_HANDLE pUdpClient, HB_CHAR *pKey, HB_CHAR *pSaveKey)
+int set_elevator_config(UDP_CLIENT_INFO_HANDLE pUdpClient, HB_CHAR *pKey)
 {
 	HB_CHAR arrcElevatorValue[512] = {0};
 	HB_CHAR arrcReturnJson[SEND_BUF_LEN] = {0};
@@ -66,15 +64,31 @@ int set_elevator_config(UDP_CLIENT_INFO_HANDLE pUdpClient, HB_CHAR *pKey, HB_CHA
 		server_send_udp_data(&stUdpServerInfo, pUdpClient, arrcReturnJson, strlen(arrcReturnJson), 0);
 		return -1;
 	}
-	//此处存储电梯配置
-	if (SetConfigKeyValue(NULL, pSaveKey, ELEVATOR_CONFIG, arrcElevatorValue) < 0)
-	{
-		strncpy(arrcReturnJson, "{\"code\":\"-30002\",\"msg\":\"配置写入失败\"}", sizeof(arrcReturnJson));
-		server_send_udp_data(&stUdpServerInfo, pUdpClient, arrcReturnJson, strlen(arrcReturnJson), 0);
-		return -1;
-	}
 
-	//通知电梯主控程序
+	if (strcmp("elevator_id", pKey) == 0)
+	{
+		strncpy(elevator_properties.elevator_id, arrcElevatorValue, sizeof(elevator_properties.elevator_id));
+		printf("elevator_id:[%s]\n", elevator_properties.elevator_id);
+	}
+	else if (strcmp("sim_card", pKey) == 0)
+	{
+		strncpy(elevator_properties.elevator_sim, arrcElevatorValue, sizeof(elevator_properties.elevator_sim));
+		printf("elevator_sim:[%s]\n", elevator_properties.elevator_sim);
+	}
+	else if (strcmp("address", pKey) == 0)
+	{
+		strncpy(elevator_properties.elevator_addr, arrcElevatorValue, sizeof(elevator_properties.elevator_addr));
+		printf("elevator_addr:[%s]\n", elevator_properties.elevator_addr);
+	}
+//
+//	//此处存储电梯配置
+//	if (SetConfigKeyValue(NULL, pSaveKey, ELEVATOR_CONFIG, arrcElevatorValue) < 0)
+//	{
+//		strncpy(arrcReturnJson, "{\"code\":\"-30002\",\"msg\":\"配置写入失败\"}", sizeof(arrcReturnJson));
+//		server_send_udp_data(&stUdpServerInfo, pUdpClient, arrcReturnJson, strlen(arrcReturnJson), 0);
+//		return -1;
+//	}
+
 	if (strcmp(pKey, "elevator_id") == 0)
 	{
 		//设置了电梯编号，需要重新获取令牌

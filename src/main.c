@@ -17,6 +17,7 @@ extern void start_listening();
 
 DEV_INFO_OBJ dev_info;
 SENSOR_INFO sensor_info;
+ELEVATOR_PROPERTIES elevator_properties; //存储电梯编号等信息
 
 static void init_dev_info()
 {

@@ -8,8 +8,6 @@
 #ifndef TCP_OPT_H_
 #define TCP_OPT_H_
 
-#include "my_include.h"
-
 //通过域名解析出相应的ip，超过timeout秒解析不出来，则返回失败-1，成功返回值大于0
 int from_domain_to_ip(char *srv_ip, char *srv_domain, int timeout);
 //tcp网络连接(域名)
