@@ -192,6 +192,7 @@ CONNECT_AGAIG:
 		sleep(3);
 		goto CONNECT_AGAIG;
 	}
+
 	while(1)
     {
     	while(ele_data_list.plist->cnt < 1)
@@ -219,8 +220,8 @@ CONNECT_AGAIG:
     	if(-1 == iRet)//发送数据失败
     	{
     		sleep(2);
-    		close_udp(&stUdpInfo);
-    		create_socket_and_connect_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT);
+//    		close_udp(&stUdpInfo);
+//    		create_socket_and_connect_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT);
     		continue;
     	}
     	else
@@ -233,8 +234,8 @@ CONNECT_AGAIG:
     			//未收到回应，数据需要重发
     			sensor_info.send_sensor_data_resend_count++;
     			printf("Recv::::recv[%d]:[%s]\n", iRet, arrcRecvBuf);
-        		close_udp(&stUdpInfo);
-        		create_socket_and_connect_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT);
+//        		close_udp(&stUdpInfo);
+//        		create_socket_and_connect_server(&stUdpInfo, arrcServerIp, UDP_SERVER_PORT);
     		}
     		else
     		{

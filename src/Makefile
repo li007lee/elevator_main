@@ -13,8 +13,9 @@ LIBS :=  -L../lib/X86_64 \
 			-lavcodec -lavfilter -lswscale -lavutil -lswresample -lm -ldl -lpthread -lrt
 
 APPBIN = elevator_mainX86_64
-DEST_BIN = /mnt/hgfs/share_dir/nfs_dir
+DEST_BIN = /mnt/hgfs/nfs_dir/share_dir/hb/elevator/bin
 endif
+
 
 ifeq ($(BOX_TYPE), hisi_v100)
 CC=arm-hisiv100nptl-linux-gcc
@@ -26,7 +27,7 @@ LIBS :=  -L../lib/hisiv100 \
 			-lavcodec -lavfilter -lswscale -lavutil -lswresample -lm -ldl -lpthread -lrt
 
 APPBIN = elevator_main100
-DEST_BIN = /mnt/hgfs/share_dir/nfs_dir
+DEST_BIN = /mnt/hgfs/nfs_dir/share_dir/hb/elevator/bin
 endif
 
 ifeq ($(BOX_TYPE), hisi_v300)
@@ -39,7 +40,7 @@ LIBS :=  -L../lib/hisiv300 \
 			-lavcodec -lavfilter -lswscale -lavutil -lswresample -lm -ldl -lpthread -lrt
 
 DEST_BIN_LOCAL = ../bin
-DEST_BIN = /mnt/hgfs/share_dir/nfs_dir/elevator
+DEST_BIN = /mnt/hgfs/nfs_dir/share_dir/hb/elevator/bin
 APPBIN = elevator_main300
 endif
 

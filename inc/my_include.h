@@ -86,7 +86,6 @@ typedef enum _tagHB_BOOL
 #define PT_PORT     8001
 #define UDP_SERVER_IP "alarmtest.hbydt.net" //测试服务器
 #define UDP_SERVER_PORT 9001
-
 #else
 //正式发布
 #define PT_ADDR_IP  "elevator.hbydt.cn" //图片上传服务器
@@ -101,11 +100,18 @@ typedef enum _tagHB_BOOL
 #define PT_Alarm_PORT     8081
 
 
-
 #define UDP_SERVER_LISTEN_PORT	8899
 //#define ELEVATOR_CONFIG "/mnt/mtd/etc/elevator.conf" //电梯配置文件路径
+
+#define GHT_4G
+#ifdef GHT_4G
+#define ELEVATOR_VERSION_PATH "/usr/elevator_version" //配置文件路径
+#define GET_PICTURE	"/mnt/mtd/bin/elevator_get_picture300"
+#else
 #define ELEVATOR_VERSION_PATH "/usr/etc/elevator_version" //配置文件路径
 #define GET_PICTURE	"/usr/bin/elevator_get_picture300"
+#endif
+
 #define ALARM_PHOTO_PATH	"/tmp/Alarm/alarm.jpg"	//报警图片位置
 #define RM_ALARM_PHOTO "rm /tmp/Alarm/alarm.jpg"
 
