@@ -11,7 +11,7 @@
 #include "hf_plant_api.h"
 #include "./sensor/start_sensor.h"
 //#include "upload_pic.h"
-//#include "./udp_server/udp_server.h"
+#include "udp_server.h"
 #include "audio/start_audio.h"
 #include "uart/uart.h"
 #include "common.h"
@@ -41,14 +41,10 @@ int main()
 	pthread_attr_t attr;
 
 	signal(SIGPIPE, SIG_IGN);
-#ifdef ALARM_IN
-	system("mkdir /tmp/Alarm");
 	av_register_all();
 	avformat_network_init();
-#endif
 
 	init_dev_info();
-
 	elevator_get_token(NULL);//获取令牌
 
 #if 1
@@ -59,7 +55,7 @@ int main()
 	pthread_attr_destroy(&attr);
 #endif
 
-#if 0
+#if 1
 	pthread_t start_udp_server_thread_id;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
@@ -83,11 +79,7 @@ int main()
 	pthread_attr_destroy(&attr);
 #endif
 
-#ifdef ALARM_IN
-	start_listening();
-#else
 	pause();
-#endif
 
 	return 0;
 }

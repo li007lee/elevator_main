@@ -104,12 +104,7 @@ typedef enum _tagHB_BOOL
 
 
 //报警接入相关宏定义
-//#define ALARM_IN	//是否启用报警输入
-//#define USE_LEVELLING_BAK //用于增加采集平层信号的精度
-//#define LOW_LEVEL_TRIGGER //一键报警低电平触发
-#define HIGH_LEVEL_TRIGGER //一键报警高电平出发（默认）
 #define ALARM_PHOTO_PATH	"/tmp/Alarm/alarm.jpg"	//报警图片位置
-#define RM_ALARM_PHOTO "rm /tmp/Alarm/alarm.jpg"
 
 #define ETHX  "eth0"
 
@@ -118,8 +113,6 @@ typedef enum _tagHB_BOOL
 
 #define PIC_MAX_SIZE	(102400) //图片最大为100K
 #define AUDIO_MAX_SIZE	(307200) //音频最大为300K
-
-#define ETHX  "eth0"
 
 typedef struct _tagDEV_INFO //设备信息结构体
 {

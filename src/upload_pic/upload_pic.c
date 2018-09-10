@@ -160,6 +160,7 @@ static HB_S32 elevator_upload_pic(char *pPicBase64, unsigned long long get_pic_t
     return HB_SUCCESS;
 }
 
+
 void *thread_send_signal_to_http(void *arg)
 {
 	pthread_detach(pthread_self());
@@ -209,7 +210,6 @@ void *thread_upload_picture(void *arg)
 	char arrc_PictureBuf[PIC_MAX_SIZE] = {0};
 	char arrc_PictureBufBase64[PIC_MAX_SIZE*3] = {0};
 
-	system(RM_ALARM_PHOTO);
 	while(1)
 	{
 		system(GET_PICTURE);

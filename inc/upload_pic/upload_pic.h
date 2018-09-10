@@ -9,7 +9,6 @@
 #define ALARM_UPLOAD_PIC_UPLOAD_PIC_H_
 
 void *thread_upload_picture(void *arg);
-
 void *thread_send_signal_to_http(void *arg);
 
 #endif /* ALARM_UPLOAD_PIC_UPLOAD_PIC_H_ */

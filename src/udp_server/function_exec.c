@@ -11,7 +11,7 @@
 #include "common.h"
 #include "md5gen.h"
 #include "tcp_opt.h"
-#include "../upload_pic.h"
+#include "upload_pic.h"
 #include "udp_opt.h"
 
 extern LOCAL_UDP_SERVER_INFO stUdpServerInfo;
@@ -301,7 +301,6 @@ static int send_photo(UDP_CLIENT_INFO_HANDLE pUdpClient, HB_CHAR *pSendBuf, int 
 		iSendBufLen -= len;
 	}
 
-//    system(RM_ALARM_PHOTO);
 	close(iSockFd);
 	printf("send len = [%d]\n", send_len);
 	return send_len;

@@ -7,7 +7,7 @@ ifeq ($(BOX_TYPE), pc_x86_64)
 CC=gcc
 STRIP=strip
 CFLAGS = -Wall -O2
-INC_PATH = -I../inc -I../inc/audio -I../inc/common
+INC_PATH = -I../inc -I../inc/audio -I../inc/common -I../inc/udp_server -I../inc/upload_pic
 LIBS :=  -L../lib/X86_64 \
 			-lxml -levent -lavformat \
 			-lavcodec -lavfilter -lswscale -lavutil -lswresample -lm -ldl -lpthread -lrt
@@ -21,7 +21,7 @@ ifeq ($(BOX_TYPE), hisi_v100)
 CC=arm-hisiv100nptl-linux-gcc
 STRIP=arm-hisiv100nptl-linux-strip
 CFLAGS = -Wall -O2
-INC_PATH = -I../inc -I../inc/audio -I../inc/common
+INC_PATH = -I../inc -I../inc/audio -I../inc/common -I../inc/udp_server -I../inc/upload_pic
 LIBS :=  -L../lib/hisiv100 \
 			-lxml -levent -lavformat \
 			-lavcodec -lavfilter -lswscale -lavutil -lswresample -lm -ldl -lpthread -lrt
@@ -34,7 +34,7 @@ ifeq ($(BOX_TYPE), hisi_v300)
 CC=arm-hisiv300-linux-gcc
 STRIP=arm-hisiv300-linux-strip
 CFLAGS = -Wall -O2
-INC_PATH = -I../inc -I../inc/audio -I../inc/common
+INC_PATH = -I../inc -I../inc/audio -I../inc/common -I../inc/udp_server -I../inc/upload_pic
 LIBS :=  -L../lib/hisiv300 \
 			-lxml -levent -lavformat \
 			-lavcodec -lavfilter -lswscale -lavutil -lswresample -lm -ldl -lsysapi -lpthread -lrt

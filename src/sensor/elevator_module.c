@@ -11,7 +11,6 @@
 #include "sensor_opt.h"
 #include "tcp_opt.h"
 #include "udp_opt.h"
-#include "../alarm.h"
 #include "../uart/uart.h"
 
 HB_VOID *create_sensor_data_node()
