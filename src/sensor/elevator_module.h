@@ -9,7 +9,7 @@
 #define ELEVATOR_MODULE_H_
 #include "my_list.h"
 
-#define MAX_SAVE_DATA	(5000) //网络不好时，缓冲的最大长度
+#define MAX_SAVE_DATA	(10000) //网络不好时，缓冲的最大长度
 
 typedef struct _tagSONSER_DATA_NODE
 {

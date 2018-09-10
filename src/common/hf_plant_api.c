@@ -105,7 +105,7 @@ HB_S32 api_get_token(HB_S32 *sockfd, HB_CHAR *buff, HB_S32 size)
     	"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n\r\n<root>\r\n<access_token></access_token>\r\n<stamp>%llu</stamp>\r\n<datas>\r\n<sn>%s</sn>\r\n<elevatorId>%s</elevatorId>\r\n</datas>\r\n</root>\r\n", \
 		time_now, mac_sn, elevator_properties.elevator_id);
     //计算MD5值
-    Calculate_MD5(desc, buf_body);
+    calculate_md5(desc, buf_body);
     //拼接发送字符串
     snprintf(url, sizeof(url), "%s&sign=%s", url_base, desc);
 
@@ -137,12 +137,12 @@ HB_S32 api_get_token(HB_S32 *sockfd, HB_CHAR *buff, HB_S32 size)
 
 
 //计算MD5
-int Calculate_MD5(char *desc, const char *src)
+int calculate_md5(char *pDest, const char *pSrc)
 {
-	char buf[102400] = {0};
+	char buf[AUDIO_MAX_SIZE*2] = {0};
 
-	snprintf(buf, sizeof(buf), "%skWbe3Nah3hjNpNdcRwlPtg", src);
-	md5_packages_string(desc, buf, strlen(buf));
+	snprintf(buf, sizeof(buf), "%skWbe3Nah3hjNpNdcRwlPtg", pSrc);
+	md5_packages_string(pDest, buf, strlen(buf));
 
 	return 1;
 }

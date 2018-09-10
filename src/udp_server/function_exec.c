@@ -116,6 +116,26 @@ int set_elevator_config(UDP_CLIENT_INFO_HANDLE pUdpClient, HB_CHAR *pKey)
  ****************************************/
 int get_net_status(UDP_CLIENT_INFO_HANDLE pUdpClient)
 {
+	HB_CHAR arrcBaiDuIp[16] = {0};
+	HB_CHAR arrcReturnJson[128] = {0};
+
+	if (from_domain_to_ip(arrcBaiDuIp, "www.baidu.com", 1) == 0)
+	{
+		//解析出来了
+		snprintf(arrcReturnJson, sizeof(arrcReturnJson), "{\"code\":\"0\",\"msg\":\"网络已启动\"}");
+		server_send_udp_data(&stUdpServerInfo, pUdpClient, arrcReturnJson, strlen(arrcReturnJson), 0);
+		printf("send to client : [%s]\n", arrcReturnJson);
+	}
+	else
+	{
+		snprintf(arrcReturnJson, sizeof(arrcReturnJson), "{\"code\":\"-30004\",\"msg\":\"网络未启动\"}");
+		server_send_udp_data(&stUdpServerInfo, pUdpClient, arrcReturnJson, strlen(arrcReturnJson), 0);
+		printf("send to client : [%s]\n", arrcReturnJson);
+	}
+
+	return 0;
+
+#if 0
 	FILE *fp;
 	HB_CHAR tmp[256] = {0};
 	HB_CHAR arrcReturnJson[128] = {0};
@@ -154,12 +174,14 @@ int get_net_status(UDP_CLIENT_INFO_HANDLE pUdpClient)
 	}
 	else
 	{
+//		snprintf(arrcReturnJson, sizeof(arrcReturnJson), "{\"code\":\"0\",\"msg\":\"网络已启动\"}");
 		snprintf(arrcReturnJson, sizeof(arrcReturnJson), "{\"code\":\"-30004\",\"msg\":\"4G启动失败\"}");
 		server_send_udp_data(&stUdpServerInfo, pUdpClient, arrcReturnJson, strlen(arrcReturnJson), 0);
 		return -1;
 	}
 
 	return -1;
+#endif
 }
 
 

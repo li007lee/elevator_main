@@ -43,6 +43,13 @@ static void *deal_cmd_thread(void *arg)
 		get_data_upload_info(pUdpClient);
 	else if (strcmp(arrcCmd, "get_version") == 0) //获取电梯型号及版本号信息
 		get_version(pUdpClient);
+	else if (strcmp(arrcCmd, "get_dev_mac") == 0)	//获取网络状态
+	{
+		HB_CHAR arrcReturnJson[64] = {0};
+		snprintf(arrcReturnJson, sizeof(arrcReturnJson), "{\"code\":\"0\",\"msg\":\"%s\"}", dev_info.mac);
+		server_send_udp_data(&stUdpServerInfo, pUdpClient, arrcReturnJson, strlen(arrcReturnJson), 0);
+		printf("send [%s]!\n", arrcReturnJson);
+	}
 	else if (strcmp(arrcCmd, "get_alarm_in_status") == 0) //获取报警输入信号状态
 	{
 		HB_CHAR arrcAlarmType[32] = {0};

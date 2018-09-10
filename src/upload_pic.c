@@ -37,6 +37,7 @@ HB_VOID *elevator_get_token(HB_VOID *arg)
 			TRACE_ERR("\n########  The HB_BOX get token failed !!!\n");
 			close(sockfd);
 			sockfd = -1;
+			sleep(5);
 			continue;
 		}
 		close(sockfd);
@@ -148,42 +149,41 @@ static HB_S32 elevator_upload_pic(char *pPicBase64, unsigned long long get_pic_t
 	}
 
 	struct timeval tv;
-	unsigned long long time_now;
+	HB_U64 lluTimeNow;
 	HB_CHAR url[512] = {0};
-	HB_CHAR send_buff[104800] = {0};
-	HB_CHAR body_buf[102400] = {0};
-	HB_CHAR desc[64] = {0};
+	HB_CHAR cSendRecvString[104800] = {0};
+	HB_CHAR cBodyBuf[102400] = {0};
+	HB_CHAR cSign[64] = {0};
 	xmlDoc *doc;
 	HB_CHAR *point = NULL;
 
-	gettimeofday(&tv,NULL);
-//	time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000;//取毫秒值
+	gettimeofday(&tv, NULL);
 	//由于DVR的NTP校时时会把北京时间校为UTC时间，所以要取格林威治时间需要在此时间上减去8小时的秒数，28800000为8小时的毫秒数
-	time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000 - 28800000;//取毫秒值
-	snprintf(body_buf, sizeof(body_buf), \
+	lluTimeNow = (HB_U64)tv.tv_sec*1000 + tv.tv_usec/1000 - 28800000;//取毫秒值
+	snprintf(cBodyBuf, sizeof(cBodyBuf), \
 		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n\r\n<root>\r\n<access_token>%s</access_token>\r\n<stamp>%llu</stamp>\r\n<datas>\r\n<sn>%s</sn>\r\n<acquisitionTime>%llu</acquisitionTime>\r\n<fileStr>%s</fileStr>\r\n<fileExt>.jpg</fileExt>\r\n<attribute></attribute>\r\n</datas>\r\n</root>\r\n", \
-		dev_info.access_token, time_now, dev_info.mac, get_pic_time, pPicBase64);
+		dev_info.access_token, lluTimeNow, dev_info.mac, get_pic_time, pPicBase64);
 	//计算MD5值
-	Calculate_MD5(desc, body_buf);
+	calculate_md5(cSign, cBodyBuf);
 	//拼接发送字符串
-	snprintf(url, sizeof(url), "/OPEN_UNION/4QAEAAABAB4/IOT_upfile/?app_id=OPEN_BASE_APP&sign=%s", desc);
-	snprintf(send_buff, sizeof(send_buff), "POST %s HTTP/1.1\r\nHost:%s:8088\r\ncontent-type: text/plain; charset=utf-8\r\nContent-Length: %d\r\nConnection:keep-alive\r\n\r\n%s",
-			url, PT_ADDR_IP, strlen(body_buf), body_buf);
+	snprintf(url, sizeof(url), "/OPEN_UNION/4QAEAAABAB4/IOT_upfile/?app_id=OPEN_BASE_APP&sign=%s", cSign);
+	snprintf(cSendRecvString, sizeof(cSendRecvString), "POST %s HTTP/1.1\r\nHost:%s:8088\r\ncontent-type: text/plain; charset=utf-8\r\nContent-Length: %d\r\nConnection:keep-alive\r\n\r\n%s",
+			url, PT_ADDR_IP, strlen(cBodyBuf), cBodyBuf);
 
-	if(send_data(&sockfd, send_buff, strlen(send_buff), 10, 0) < 0)
+	if(send_data(&sockfd, cSendRecvString, strlen(cSendRecvString), 10, 0) < 0)
 	{
 	   return -1;
 	}
-//	printf("\n###### api_get_token() send: %s\n",send_buff);
-	printf("\n###### api_get_token() url: %s\n", url);
-	memset(send_buff, 0, sizeof(send_buff));
-	if(recv_data(&sockfd ,send_buff, sizeof(send_buff), 10) < 0)
+	printf("\n###### api_get_token() send: %s\n",cSendRecvString);
+//	printf("\n###### api_get_token() url: %s\n", url);
+	memset(cSendRecvString, 0, sizeof(cSendRecvString));
+	if(recv_data(&sockfd ,cSendRecvString, sizeof(cSendRecvString), 10) < 0)
 	{
 		printf("%s:%d:recv from http server failed!\n", __FILE__, __LINE__);
 		return -1;
 	}
-	printf("\n######## api_get_token() recv: %s\n",send_buff);
-	if((point = strstr(send_buff,"<?xml")) != NULL)
+	printf("\n######## api_get_token() recv: %s\n",cSendRecvString);
+	if((point = strstr(cSendRecvString,"<?xml")) != NULL)
 	{
 		doc = File2MemxmlParseToDoc(point, &sockfd, upload_picture_xml_cb);
 		xmlFreeDoc(doc);
@@ -210,7 +210,10 @@ void *thread_send_signal_to_http(void *arg)
 	}
 
     sprintf(send_buff, "GET /mobile/alarmFromScreen?liftId=%s HTTP/1.1\r\nHost:%s:%d\r\nConnection:keep-alive\r\nAccept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\nUpgrade-Insecure-Requests:1\r\nUser-Agent:Mozilla/5.0\r\nAccept-Encoding:gzip,deflate,sdch\r\nAccept-Language:zh-CN,zh;q=0.8\r\n\r\n",
-    		dev_info.sn, PT_Alarm_ADDR_IP, PT_Alarm_PORT);
+    		elevator_properties.elevator_id,PT_Alarm_ADDR_IP, PT_Alarm_PORT);
+
+//    sprintf(send_buff, "GET /mobile/alarmFromScreen?liftId=%s HTTP/1.1\r\nHost:%s:%d\r\nConnection:keep-alive\r\nAccept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\nUpgrade-Insecure-Requests:1\r\nUser-Agent:Mozilla/5.0\r\nAccept-Encoding:gzip,deflate,sdch\r\nAccept-Language:zh-CN,zh;q=0.8\r\n\r\n",
+//    		dev_info.sn, PT_Alarm_ADDR_IP, PT_Alarm_PORT);
 
 	if(send_data(&sockfd, send_buff, strlen(send_buff), 10, 0) < 0)
 	{

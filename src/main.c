@@ -12,6 +12,8 @@
 #include "./sensor/start_sensor.h"
 #include "upload_pic.h"
 #include "./udp_server/udp_server.h"
+#include "audio/start_audio.h"
+#include "uart/uart.h"
 
 extern void start_listening();
 
@@ -22,7 +24,7 @@ ELEVATOR_PROPERTIES elevator_properties; //存储电梯编号等信息
 static void init_dev_info()
 {
 	memset(&dev_info, 0, sizeof(DEV_INFO_OBJ));
-	dev_info.sample_frequency = 1;
+	dev_info.sample_frequency = 500000; //500ms
 	get_sys_mac(dev_info.mac, sizeof(dev_info.mac));
 	get_sys_sn(dev_info.sn, sizeof(dev_info.sn));
 
@@ -54,11 +56,27 @@ int main()
 	pthread_attr_destroy(&attr);
 #endif
 
-#if 1
+#if 0
 	pthread_t start_udp_server_thread_id;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 	pthread_create(&start_udp_server_thread_id, &attr, thread_udp_server, NULL);
+	pthread_attr_destroy(&attr);
+#endif
+
+#if 0
+	pthread_t start_audio_thread_id;
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+	pthread_create(&start_audio_thread_id, &attr, thread_start_audio_moudle, NULL);
+	pthread_attr_destroy(&attr);
+#endif
+
+#if 1
+	pthread_t start_wsd_thread_id;
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+	pthread_create(&start_wsd_thread_id, &attr, thread_read_uart, NULL);
 	pthread_attr_destroy(&attr);
 #endif
 

@@ -47,28 +47,25 @@
 #include <sys/shm.h>
 #include <linux/input.h>
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 //数据类型定义
 ///////////////////////////////////////////////////////////////////////////////////////////
-typedef unsigned char	HB_U8;
-typedef unsigned short	HB_U16;
-typedef unsigned int	HB_U32;
-typedef unsigned long long    HB_U64;
-typedef signed char	HB_S8;
-typedef short   HB_S16;
-typedef int    	HB_S32;
-typedef long long	HB_S64;
-typedef char		HB_CHAR;
-typedef float		HB_FLOAT;
-typedef void		HB_VOID;
-typedef void 	*HB_HANDLE;
+typedef unsigned char HB_U8;
+typedef unsigned short HB_U16;
+typedef unsigned int HB_U32;
+typedef unsigned long long HB_U64;
+typedef signed char HB_S8;
+typedef short HB_S16;
+typedef int HB_S32;
+typedef long long HB_S64;
+typedef char HB_CHAR;
+typedef float HB_FLOAT;
+typedef void HB_VOID;
+typedef void *HB_HANDLE;
 typedef enum _tagHB_BOOL
 {
-    HB_FALSE = 0,
-    HB_TRUE  = 1
-}HB_BOOL;
-
+	HB_FALSE = 0, HB_TRUE = 1
+} HB_BOOL;
 
 #ifndef NULL
 #define NULL  0L
@@ -99,46 +96,45 @@ typedef enum _tagHB_BOOL
 #define PT_Alarm_ADDR_IP  "www.chorstar.com" //发送到中融智达服务器
 #define PT_Alarm_PORT     8081
 
-
 #define UDP_SERVER_LISTEN_PORT	8899
 //#define ELEVATOR_CONFIG "/mnt/mtd/etc/elevator.conf" //电梯配置文件路径
 
-#define GHT_4G
-#ifdef GHT_4G
 #define ELEVATOR_VERSION_PATH "/usr/elevator_version" //配置文件路径
 #define GET_PICTURE	"/mnt/mtd/bin/elevator_get_picture300"
-#else
-#define ELEVATOR_VERSION_PATH "/usr/etc/elevator_version" //配置文件路径
-#define GET_PICTURE	"/usr/bin/elevator_get_picture300"
-#endif
+
+//#define LOW_LEVEL_TRIGGER //一键报警低电平触发
+#define HIGH_LEVEL_TRIGGER //一键报警高电平出发（默认）
+
+//#define USE_LEVELLING_BAK //用于增加采集平层信号的精度
 
 #define ALARM_PHOTO_PATH	"/tmp/Alarm/alarm.jpg"	//报警图片位置
 #define RM_ALARM_PHOTO "rm /tmp/Alarm/alarm.jpg"
 
 #define ETHX  "eth0"
 
-
 #define MAX_ERR_CRITICAL	10
 #define MAX_ERR_TIMES		3
 
-
 #define PIC_MAX_SIZE	(102400) //图片最大为100K
+#define AUDIO_MAX_SIZE	(307200) //音频最大为300K
+
 #define ETHX  "eth0"
 
-typedef struct _tagDEV_INFO//设备信息结构体
+typedef struct _tagDEV_INFO //设备信息结构体
 {
-	HB_S32 sample_frequency; //传感器数据采集频率,秒/条
+	HB_S32 sample_frequency; //传感器数据采集频率,微秒/条
 	HB_S32 return_token;	//获取token的成功标志
 	HB_S32 upload_pic_success_flag;
-    HB_CHAR mac[32];	//设备mac地址
-    HB_CHAR sn[32];		//设备序列号
-    HB_CHAR access_token[64]; //获取到的token
-    HB_CHAR sessionId[64];	//上传传感器数据是需要的sessionId
-}DEV_INFO_OBJ, *DEV_INFO_HANDLE;
+	HB_S32 iUploadAudioSuccessFlag;	//音频上传成功标志
+	HB_CHAR mac[32];	//设备mac地址
+	HB_CHAR sn[32];		//设备序列号
+	HB_CHAR access_token[64]; //获取到的token
+	HB_CHAR sessionId[64];	//上传传感器数据是需要的sessionId
+} DEV_INFO_OBJ, *DEV_INFO_HANDLE;
 
 typedef struct _SENSOR_INFO
 {
-    //统计计数
+	//统计计数
 	HB_U32 send_sensor_data_total_cout;	//发送传感器数据的总次数
 	HB_U32 send_sensor_data_success_count; //发送传感器数据成功的总次数
 	HB_U32 send_sensor_data_resend_count; //传感器数据重发的总次数
@@ -146,10 +142,10 @@ typedef struct _SENSOR_INFO
 	HB_U32 alarm_pic_upload_count; //报警图片上传成功总张数
 
 	//用于测试传感器是否已经正确安装，如果收到的数据发生了0到1 或 1到0的变化则视为已经正确安装。
-	HB_S32	door_closed_ok_flag;	//关门到位测试成功标志
-	HB_S32	door_opened_ok_flag;	//开门到位测试成功标志
-	HB_S32	levelling_ok_flag;	//平层测试成功标志。
-}SENSOR_INFO;
+	HB_S32 door_closed_ok_flag;	//关门到位测试成功标志
+	HB_S32 door_opened_ok_flag;	//开门到位测试成功标志
+	HB_S32 levelling_ok_flag;	//平层测试成功标志。
+} SENSOR_INFO;
 
 //电梯属性结构体
 typedef struct _ELEVATOR_PROPERTIES
@@ -157,7 +153,7 @@ typedef struct _ELEVATOR_PROPERTIES
 	HB_CHAR elevator_id[64];	//电梯编号
 	HB_CHAR elevator_sim[32]; //电梯盒子中的sim卡卡号
 	HB_CHAR elevator_addr[256]; //电梯盒子安装位置
-}ELEVATOR_PROPERTIES;
+} ELEVATOR_PROPERTIES;
 
 extern DEV_INFO_OBJ dev_info;
 extern SENSOR_INFO sensor_info;
@@ -179,6 +175,5 @@ extern ELEVATOR_PROPERTIES elevator_properties;
 #define TRACE_ERR(str, args...)    do{} while(0)
 #define TRACE_DBG(str, args...)   do{} while(0)
 #endif /* ERR_DEBUG */
-
 
 #endif /* MY_INCLUDE_H_ */

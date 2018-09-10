@@ -45,7 +45,7 @@ APPBIN = elevator_main300
 endif
 
 
-SRCS = $(wildcard ./common/*.c *.c ./sensor/*.c ./udp_server/*.c ./audio/*.c ./uart/*.c)
+SRCS = $(wildcard ./common/*.c *.c ./sensor/*.c ./udp_server/*.c ./audio/*.c)
 OBJS = $(patsubst %.c,%.o,$(notdir ${SRCS})) 
 
 

@@ -17,7 +17,7 @@ typedef enum {
 
 HB_S32 api_get_token(HB_S32 *sockfd, HB_CHAR *buff, HB_S32 size);
 //计算MD5
-int Calculate_MD5(char *desc, const char *src);
+int calculate_md5(char *pDest, const char *pSrc);
 //获取MAC
 int get_sys_mac(char *sn, int sn_size);
 //获取序列号，mac后8位

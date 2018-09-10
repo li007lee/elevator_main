@@ -12,6 +12,7 @@
 #include "../common/tcp_opt.h"
 #include "../common/udp_opt.h"
 #include "../alarm.h"
+#include "../uart/uart.h"
 
 HB_VOID *create_sensor_data_node()
 {
@@ -90,12 +91,13 @@ HB_VOID *elevator_recv_data_task(HB_VOID *param)
 
 		while(!sensor_ctx.exit_flag)
 		{
-			sleep(dev_info.sample_frequency);//采集传感器数据的频率
+			usleep(dev_info.sample_frequency);//采集传感器数据的频率
 			pthread_mutex_lock(&sensor_ctx.mutex_lock_data);
 			gettimeofday(&tv,NULL);
 //			time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000;//取毫秒值
 			//由于DVR的NTP校时时会把北京时间校为UTC时间，所以要取格林威治时间需要在此时间上减去8小时的秒数，28800000为8小时的毫秒数
 			time_now = (unsigned long long)tv.tv_sec*1000 + tv.tv_usec/1000 - 28800000;//取毫秒值
+#ifdef USE_LEVELLING_BAK
 			snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|%d|%d|%d|%d|%d|",
 								dev_info.mac, time_now,
 								sensor_ctx.accl_x, sensor_ctx.accl_y, \
@@ -106,7 +108,18 @@ HB_VOID *elevator_recv_data_task(HB_VOID *param)
 								stAlarmInfo.iDoorClose, stAlarmInfo.iDoorOpen);
 			stAlarmInfo.iLevellingSendFlag = 1;
 			stAlarmInfo.iLevelling = stAlarmInfo.iLevelling2;
-			printf("recv_sensor_data:[%s]\n", sensor_data);
+
+#else
+			snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|%d|%d|-1|%d|%d|%s|%s",
+					dev_info.mac, time_now,
+					sensor_ctx.accl_x, sensor_ctx.accl_y, \
+					sensor_ctx.accl_z, sensor_ctx.gyro_x, \
+					sensor_ctx.gyro_y, sensor_ctx.gyro_z, \
+					stAlarmInfo.iHandAlarm, stAlarmInfo.iLevelling, \
+					stAlarmInfo.iDoorClose, stAlarmInfo.iDoorOpen, \
+					glWSDInfo.cTemperature, glWSDInfo.cHumidity);
+#endif
+//			printf("recv_sensor_data:[%s]\n", sensor_data);
 			pthread_mutex_unlock(&sensor_ctx.mutex_lock_data);
 
 			char *send_msg = (char *)malloc(strlen(sensor_data) + 1);
@@ -214,8 +227,7 @@ CONNECT_AGAIG:
 //		printf("stSensorHeader.iSid = [%d]\n", stSensorHeader.iSid);
 //		printf("stSensorHeader.sDataLen=[%d]\n", stSensorHeader.sDataLen);
     	iRet = send_udp_data(&stSensorHeader, &stUdpInfo, send_msg, strlen(send_msg), 1);
-    	printf("Send::::sockfd=[%d], sessionID:[%lld], msg=[%s], strlen=[%d], sendlen=[%d]\n",\
-    					stUdpInfo.iSockFd, stSensorHeader.lSessionId, send_msg, strlen(send_msg), iRet);
+    	printf("%dus---->Send sessionID:[%lld], msg=[%s]\n", dev_info.sample_frequency, stSensorHeader.lSessionId, send_msg);
     	sensor_info.send_sensor_data_total_cout++;
     	if(-1 == iRet)//发送数据失败
     	{

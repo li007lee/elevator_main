@@ -46,6 +46,8 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 	static int iLevellingBak = 0;//用于记录上一次平层的值
 	static int iDoorCloseBak = 0;//用于记录上一次关门到位的值
 	static int iDoorOpenBak = 0;//用于记录上一次开门到位的值
+//	int iHandAlarmCount = 0; //手动报警记次
+//	static time_t time_now=0,time_old=0;
 
 	struct evbuffer *src = bufferevent_get_input(buf_bev);//获取输入缓冲区
 	int len = evbuffer_get_length(src);//获取输入缓冲区中数据的长度，也就是可以读取的长度。
@@ -75,17 +77,18 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 //		左一：手动报警  0
 //		左二：平层		2
 
-//		手动报警		关门到位		平层		开门到位
-//			/				/			  /				/
-//		channel[00]=0 channel[01]=0 channel[02]=0 channel[03]=0
+//		iHandAlarm[00]=0 iDoorClose[01]=0 iLevelling[02]=0 iDoorOpen[03]=0
 
-//		stAlarmInfo.iSendFlag = 1;
 		stAlarmInfo.iHandAlarm = (0x1 & iAlarmNum);
-//		stAlarmInfo.iLevelling = ((0x4 & iAlarmNum) >> 2);
+#ifndef USE_LEVELLING_BAK
+		stAlarmInfo.iLevelling = ((0x4 & iAlarmNum) >> 2);
+#else
 		iLevelling = ((0x4 & iAlarmNum) >> 2);
+#endif
 		stAlarmInfo.iDoorClose = ((0x2 & iAlarmNum) >> 1);
 		stAlarmInfo.iDoorOpen = ((0x8 & iAlarmNum) >> 3);
 
+#ifdef USE_LEVELLING_BAK
 		if (iLevellingBak!=iLevelling)
 		{
 			sensor_info.levelling_ok_flag = 1;
@@ -93,6 +96,7 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 
 			if (stAlarmInfo.iLevellingSendFlag == 0)
 			{
+//				stAlarmInfo.iLevelling = stAlarmInfo.iLevelling2;
 				stAlarmInfo.iLevelling2 = iLevelling;
 			}
 			else
@@ -104,7 +108,7 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 			stAlarmInfo.iLevellingSendFlag = 0;
 
 		}
-
+#endif
 		if (iDoorCloseBak!=stAlarmInfo.iDoorClose)
 		{
 			sensor_info.door_closed_ok_flag = 1;
@@ -117,8 +121,35 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 			iDoorOpenBak = stAlarmInfo.iDoorOpen;
 		}
 
-
+#ifdef HIGH_LEVEL_TRIGGER
 		if ((stAlarmInfo.iHandAlarm) && (iHandAlarmBak != 1)) //新触发的手动报警
+		{
+			iHandAlarmBak = 1;
+			deal_hand_alarm();
+//			time_now = time(NULL);
+//
+//			if ((time_now - time_old) > 20)
+//			{
+//				iHandAlarmCount = 0;
+//			}
+//			else
+//			{
+//				iHandAlarmCount++;
+//			}
+//			time_old = time_now;
+//
+//			if (iHandAlarmCount >= 1)
+//			{
+//				iHandAlarmBak = 1;
+//				deal_hand_alarm();
+//			}
+		}
+		else
+		{
+			iHandAlarmBak = 0;
+		}
+#elif defined LOW_LEVEL_TRIGGER
+		if ((stAlarmInfo.iHandAlarm==0) && (iHandAlarmBak != 1)) //新触发的手动报警
 		{
 			iHandAlarmBak = 1;
 			deal_hand_alarm();
@@ -127,7 +158,7 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 		{
 			iHandAlarmBak = 0;
 		}
-
+#endif
 		bufferevent_free(buf_bev);
 	}
 //	else if (strncmp(arrcCommand, "GetSensorInfo", strlen("GetSensorInfo")) == 0) //获取传感器统计信息
@@ -175,6 +206,12 @@ static void accept_client_connect_cb(struct evconnlistener *listener, evutil_soc
     bufferevent_setcb(accept_sockfd_bev, cmd_task_read_cb, NULL, cmd_task_event_cb, (void*)NULL);
     bufferevent_enable(accept_sockfd_bev, EV_READ|EV_WRITE);
     //bufferevent_enable(accept_sockfd_bev, EV_READ|EV_WRITE);
+//#define EV_TIMEOUT 0x01  //定时器事件
+//#define EV_READ  0x02  //IO读事件
+//#define EV_WRITE 0x04  //IO写事件
+//#define EV_SIGNAL 0x08  //信号事件
+//#define EV_PERSIST 0x10 //永久事件
+
     return;
 }
 
