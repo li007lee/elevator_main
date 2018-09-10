@@ -9,9 +9,12 @@
 #include "my_include.h"
 #include "md5gen.h"
 #include "xml_app.h"
-#include "../common/hf_plant_api.h"
-#include "../common/tcp_opt.h"
+#include "hf_plant_api.h"
+#include "tcp_opt.h"
+#include "common.h"
 #include "audio_ctrl.h"
+#include "simclist.h"
+
 
 list_t listAudioList;
 pthread_mutex_t lockAudioListMutexLock = PTHREAD_MUTEX_INITIALIZER;//音频链表锁
@@ -184,7 +187,7 @@ static HB_S32 elevator_upload_audio(char *pAudioBase64, HB_U64 lluAudioRecordTim
     return HB_SUCCESS;
 }
 
-HB_VOID *thread_upload_audio(HB_HANDLE *hArg)
+static HB_VOID *thread_upload_audio(HB_HANDLE hArg)
 {
 	pthread_detach(pthread_self());
 	AUDIO_INFO_HANDLE pAudioFile = (AUDIO_INFO_HANDLE)hArg;

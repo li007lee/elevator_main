@@ -9,7 +9,7 @@
 #include "event.h"
 #include "event2/listener.h"
 
-#include "./common/common.h"
+#include "common.h"
 #include "upload_pic.h"
 #include "alarm.h"
 
@@ -41,9 +41,9 @@ static void cmd_task_read_cb(struct bufferevent *buf_bev, void *arg)
 {
 	char arrcCommand[32] = {0};
 	char dataBuf[512] = {0};
-	int iLevelling = 0;//用于记录当前平层的值
+//	int iLevelling = 0;//用于记录当前平层的值
 	static int iHandAlarmBak = 0;//用于记录上一次手动报警的值
-	static int iLevellingBak = 0;//用于记录上一次平层的值
+//	static int iLevellingBak = 0;//用于记录上一次平层的值
 	static int iDoorCloseBak = 0;//用于记录上一次关门到位的值
 	static int iDoorOpenBak = 0;//用于记录上一次开门到位的值
 //	int iHandAlarmCount = 0; //手动报警记次

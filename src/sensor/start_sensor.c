@@ -9,7 +9,7 @@
 
 #include "dev_opt.h"
 #include "elevator_module.h"
-#include "../common/udp_opt.h"
+#include "udp_opt.h"
 
 HB_VOID *start_sensor(HB_VOID *arg)
 {

@@ -6,13 +6,13 @@
  */
 
 #include "function_exec.h"
-#include "../common/file_opt.h"
-#include "../common/cJSON.h"
-#include "../common/common.h"
+#include "file_opt.h"
+#include "cJSON.h"
+#include "common.h"
 #include "md5gen.h"
-#include "../common/tcp_opt.h"
+#include "tcp_opt.h"
 #include "../upload_pic.h"
-#include "../common/udp_opt.h"
+#include "udp_opt.h"
 
 extern LOCAL_UDP_SERVER_INFO stUdpServerInfo;
 

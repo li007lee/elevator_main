@@ -8,7 +8,7 @@
 #ifndef SERVER_UDP_OPT_H_
 #define SERVER_UDP_OPT_H_
 
-#include "../common/udp_opt.h"
+#include "udp_opt.h"
 
 typedef struct _LOCAL_UDP_SERVER_INFO
 {

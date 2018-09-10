@@ -65,7 +65,7 @@ HB_VOID close_uart(HB_S32 *pUartFd)
 	}
 }
 
-HB_S32 send_to_uart(HB_S32 iUartFd, HB_CHAR *pData, HB_S32 iDataLen)
+HB_S32 send_to_uart(HB_S32 iUartFd, HB_U8 *pData, HB_S32 iDataLen)
 {
 	HB_S32 iWriteLen = 0;
 	HB_S32 i;
@@ -88,7 +88,7 @@ HB_S32 send_to_uart(HB_S32 iUartFd, HB_CHAR *pData, HB_S32 iDataLen)
 	return iWriteLen;
 }
 
-HB_S32 read_from_uart(HB_S32 iUartFd, HB_CHAR *pData, HB_S32 iDataSize)
+HB_S32 read_from_uart(HB_S32 iUartFd, HB_U8 *pData, HB_S32 iDataSize)
 {
 	int i;
 	HB_S32 iLen = 0;

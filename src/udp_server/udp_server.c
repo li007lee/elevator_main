@@ -7,7 +7,7 @@
 
 #include "my_include.h"
 #include "server_udp_opt.h"
-#include "../common/file_opt.h"
+#include "file_opt.h"
 #include "function_exec.h"
 
 LOCAL_UDP_SERVER_INFO stUdpServerInfo;

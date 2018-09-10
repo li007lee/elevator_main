@@ -7,47 +7,13 @@
 #include "my_include.h"
 #include "md5gen.h"
 #include "xml_app.h"
-#include "./common/hf_plant_api.h"
-#include "./common/tcp_opt.h"
+#include "hf_plant_api.h"
+#include "tcp_opt.h"
+#include "common.h"
 
 #include "upload_pic.h"
 
 pthread_mutex_t mutex_send_pic = PTHREAD_MUTEX_INITIALIZER;
-
-HB_VOID *elevator_get_token(HB_VOID *arg)
-{
-	HB_S32 ret = 0;
-	HB_S32 sockfd = -1;
-	HB_CHAR buff[1024] = {0};
-
-    while (1)
-    {
-		ret = create_socket_connect_domain(&sockfd, PT_ADDR_IP, PT_PORT, 5);
-		if(ret != HB_SUCCESS)
-		{
-			TRACE_ERR("\n########  (get IP token)The HB_BOX connect HbServer failed !!!\n");
-			sleep(5);
-			continue;
-		}
-
-		api_get_token(&sockfd, buff, sizeof(buff));//从服务器获取令牌
-		if(dev_info.return_token != 1)
-		{
-			//sleep_appoint_time(connect_faile_times++);
-			TRACE_ERR("\n########  The HB_BOX get token failed !!!\n");
-			close(sockfd);
-			sockfd = -1;
-			sleep(5);
-			continue;
-		}
-		close(sockfd);
-		sockfd = -1;
-		break;
-    }
-
-    return NULL;
-}
-
 
 static char * base64_encode( const char * bindata, char * base64, int binlength)
 {

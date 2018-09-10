@@ -8,14 +8,15 @@
 #include "my_include.h"
 #include "libavformat/avformat.h"
 
-#include "./common/hf_plant_api.h"
+#include "hf_plant_api.h"
 #include "./sensor/start_sensor.h"
-#include "upload_pic.h"
-#include "./udp_server/udp_server.h"
+//#include "upload_pic.h"
+//#include "./udp_server/udp_server.h"
 #include "audio/start_audio.h"
 #include "uart/uart.h"
+#include "common.h"
 
-extern void start_listening();
+//extern void start_listening();
 
 DEV_INFO_OBJ dev_info;
 SENSOR_INFO sensor_info;
@@ -40,9 +41,11 @@ int main()
 	pthread_attr_t attr;
 
 	signal(SIGPIPE, SIG_IGN);
+#ifdef ALARM_IN
 	system("mkdir /tmp/Alarm");
 	av_register_all();
 	avformat_network_init();
+#endif
 
 	init_dev_info();
 
@@ -80,7 +83,11 @@ int main()
 	pthread_attr_destroy(&attr);
 #endif
 
+#ifdef ALARM_IN
 	start_listening();
+#else
+	pause();
+#endif
 
 	return 0;
 }

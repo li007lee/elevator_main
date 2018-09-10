@@ -9,8 +9,8 @@
 
 #include "my_include.h"
 #include "sensor_opt.h"
-#include "../common/tcp_opt.h"
-#include "../common/udp_opt.h"
+#include "tcp_opt.h"
+#include "udp_opt.h"
 #include "../alarm.h"
 #include "../uart/uart.h"
 
@@ -110,13 +110,20 @@ HB_VOID *elevator_recv_data_task(HB_VOID *param)
 			stAlarmInfo.iLevelling = stAlarmInfo.iLevelling2;
 
 #else
-			snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|%d|%d|-1|%d|%d|%s|%s",
+//			snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|%d|%d|-1|%d|%d|%s|%s",
+//					dev_info.mac, time_now,
+//					sensor_ctx.accl_x, sensor_ctx.accl_y,
+//					sensor_ctx.accl_z, sensor_ctx.gyro_x,
+//					sensor_ctx.gyro_y, sensor_ctx.gyro_z,
+//					stAlarmInfo.iHandAlarm, stAlarmInfo.iLevelling,
+//					stAlarmInfo.iDoorClose, stAlarmInfo.iDoorOpen,
+//					glWSDInfo.cTemperature, glWSDInfo.cHumidity);
+
+			snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|%s|%s",
 					dev_info.mac, time_now,
 					sensor_ctx.accl_x, sensor_ctx.accl_y, \
 					sensor_ctx.accl_z, sensor_ctx.gyro_x, \
 					sensor_ctx.gyro_y, sensor_ctx.gyro_z, \
-					stAlarmInfo.iHandAlarm, stAlarmInfo.iLevelling, \
-					stAlarmInfo.iDoorClose, stAlarmInfo.iDoorOpen, \
 					glWSDInfo.cTemperature, glWSDInfo.cHumidity);
 #endif
 //			printf("recv_sensor_data:[%s]\n", sensor_data);

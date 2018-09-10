@@ -9,7 +9,7 @@
 
 #include "dev_opt.h"
 #include "sensor_opt.h"
-#include "../common/hf_plant_api.h"
+#include "hf_plant_api.h"
 
 
 void InitSensorGlobleVar()

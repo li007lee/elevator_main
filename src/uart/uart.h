@@ -18,8 +18,8 @@ typedef struct _WSD_INFO
 }WSD_INFO_OBJ, *WSD_INFO_HANDLE;
 
 HB_S32 open_uart(char *pPath, speed_t speed);
-HB_S32 send_to_uart(HB_S32 iUartFd, HB_CHAR *pData, HB_S32 iDataLen);
-HB_S32 read_from_uart(HB_S32 iUartFd, HB_CHAR *pData, HB_S32 iDataSize);
+HB_S32 send_to_uart(HB_S32 iUartFd, HB_U8 *pData, HB_S32 iDataLen);
+HB_S32 read_from_uart(HB_S32 iUartFd, HB_U8 *pData, HB_S32 iDataSize);
 HB_VOID close_uart(HB_S32 *pUartFd);
 HB_VOID *thread_read_uart(HB_HANDLE hArg);
 

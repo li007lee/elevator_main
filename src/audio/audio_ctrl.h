@@ -10,7 +10,6 @@
 
 #include "./inc/sysapi/sys_api.h"
 #include "./inc/hbnet/hbdvrnet.h"
-#include "simclist.h"
 
 #define AUDIO_RECORD_TIME		(30) //录音时间
 #define AUDIO_SCAN_TIME		(AUDIO_RECORD_TIME-7) //录音链表扫描时间
