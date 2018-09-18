@@ -160,7 +160,7 @@ static HB_S32 elevator_upload_pic(char *pPicBase64, unsigned long long get_pic_t
     return HB_SUCCESS;
 }
 
-
+#if 0
 void *thread_send_signal_to_http(void *arg)
 {
 	pthread_detach(pthread_self());
@@ -199,6 +199,8 @@ void *thread_send_signal_to_http(void *arg)
 	sockfd = -1;
 	pthread_exit(NULL);
 }
+#endif
+
 
 void *thread_upload_picture(void *arg)
 {
@@ -261,4 +263,3 @@ void *thread_upload_picture(void *arg)
 	printf("upload thread exit!\n");
 	pthread_exit(NULL);
 }
-

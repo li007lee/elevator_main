@@ -14,6 +14,7 @@
 #include "udp_server.h"
 #include "audio/start_audio.h"
 #include "uart/uart.h"
+#include "net_to_rs485/net_to_rs485.h"
 #include "common.h"
 
 //extern void start_listening();
@@ -41,13 +42,14 @@ int main()
 	pthread_attr_t attr;
 
 	signal(SIGPIPE, SIG_IGN);
+	system("mkdir /tmp/Alarm");
 	av_register_all();
 	avformat_network_init();
 
 	init_dev_info();
 	elevator_get_token(NULL);//获取令牌
 
-#if 1
+#if 1 //加速度陀螺仪模块
 	pthread_t get_sensor_pthread_id;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
@@ -55,7 +57,7 @@ int main()
 	pthread_attr_destroy(&attr);
 #endif
 
-#if 1
+#if 0 //手机端配置模块
 	pthread_t start_udp_server_thread_id;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
@@ -63,7 +65,7 @@ int main()
 	pthread_attr_destroy(&attr);
 #endif
 
-#if 0
+#if 0 //音频采集模块
 	pthread_t start_audio_thread_id;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
@@ -71,11 +73,19 @@ int main()
 	pthread_attr_destroy(&attr);
 #endif
 
-#if 1
+#if 1 //温湿度采集模块
 	pthread_t start_wsd_thread_id;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 	pthread_create(&start_wsd_thread_id, &attr, thread_read_uart, NULL);
+	pthread_attr_destroy(&attr);
+#endif
+
+#if 1 //激光测距模块
+	pthread_t start_get_distance_thread_id;
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+	pthread_create(&start_get_distance_thread_id, &attr, thread_get_distance_moudle, NULL);
 	pthread_attr_destroy(&attr);
 #endif
 

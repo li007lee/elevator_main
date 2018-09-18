@@ -136,6 +136,8 @@ HB_VOID *thread_read_uart(HB_HANDLE hArg)
 	HB_S16 sSd = 0;//湿度值
 
 	memset(&glWSDInfo, 0, sizeof(WSD_INFO_OBJ));
+	strncpy(glWSDInfo.cTemperature, "0.00", sizeof(glWSDInfo.cTemperature));
+	strncpy(glWSDInfo.cHumidity, "0.00", sizeof(glWSDInfo.cHumidity));
 
 	for (;;)
 	{
@@ -179,7 +181,7 @@ HB_VOID *thread_read_uart(HB_HANDLE hArg)
 			}
 			else
 			{
-				//其它数据(激光)
+				//其它数据
 			}
 
 		}

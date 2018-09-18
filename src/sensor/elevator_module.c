@@ -12,6 +12,7 @@
 #include "tcp_opt.h"
 #include "udp_opt.h"
 #include "../uart/uart.h"
+#include "../net_to_rs485/net_to_rs485.h"
 
 HB_VOID *create_sensor_data_node()
 {
@@ -118,12 +119,13 @@ HB_VOID *elevator_recv_data_task(HB_VOID *param)
 //					stAlarmInfo.iDoorClose, stAlarmInfo.iDoorOpen,
 //					glWSDInfo.cTemperature, glWSDInfo.cHumidity);
 
-			snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|%s|%s",
+			snprintf(sensor_data, sizeof(sensor_data), "%s|%llu|%ld|%ld|%ld|%ld|%ld|%ld|%s|%s|%d",
 					dev_info.mac, time_now,
 					sensor_ctx.accl_x, sensor_ctx.accl_y, \
 					sensor_ctx.accl_z, sensor_ctx.gyro_x, \
 					sensor_ctx.gyro_y, sensor_ctx.gyro_z, \
-					glWSDInfo.cTemperature, glWSDInfo.cHumidity);
+					glWSDInfo.cTemperature, glWSDInfo.cHumidity, \
+					stDistance.iDistance);
 #endif
 //			printf("recv_sensor_data:[%s]\n", sensor_data);
 			pthread_mutex_unlock(&sensor_ctx.mutex_lock_data);

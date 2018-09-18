@@ -92,27 +92,27 @@ typedef enum _tagHB_BOOL
 
 #endif
 
+#define ETHX  "eth0"
+
 //报警到来发送信号到服务器
 #define PT_Alarm_ADDR_IP  "www.chorstar.com" //发送到中融智达服务器
 #define PT_Alarm_PORT     8081
 
 #define UDP_SERVER_LISTEN_PORT	8899
 //#define ELEVATOR_CONFIG "/mnt/mtd/etc/elevator.conf" //电梯配置文件路径
-
 #define ELEVATOR_VERSION_PATH "/usr/elevator_version" //配置文件路径
+
+
 #define GET_PICTURE	"/mnt/mtd/bin/elevator_get_picture300"
-
-
 //报警接入相关宏定义
 #define ALARM_PHOTO_PATH	"/tmp/Alarm/alarm.jpg"	//报警图片位置
-
-#define ETHX  "eth0"
-
-#define MAX_ERR_CRITICAL	10
-#define MAX_ERR_TIMES		3
-
 #define PIC_MAX_SIZE	(102400) //图片最大为100K
 #define AUDIO_MAX_SIZE	(307200) //音频最大为300K
+
+
+#define MAX_ERR_CRITICAL	10
+#define MAX_ERR_TIMES		3	//最大失败次数
+
 
 typedef struct _tagDEV_INFO //设备信息结构体
 {
