@@ -132,7 +132,7 @@ static HB_S32 elevator_upload_pic(char *pPicBase64, unsigned long long get_pic_t
 	//计算MD5值
 	calculate_md5(cSign, cBodyBuf);
 	//拼接发送字符串
-	snprintf(url, sizeof(url), "/OPEN_UNION/4QAEAAABAB4/IOT_upfile/?app_id=OPEN_BASE_APP&sign=%s", cSign);
+	snprintf(url, sizeof(url), "/OPEN_UNION/4QAEAAABAB4/IOT_upload_img/?app_id=OPEN_BASE_APP&sign=%s", cSign);
 	snprintf(cSendRecvString, sizeof(cSendRecvString), "POST %s HTTP/1.1\r\nHost:%s:8088\r\ncontent-type: text/plain; charset=utf-8\r\nContent-Length: %d\r\nConnection:keep-alive\r\n\r\n%s",
 			url, PT_ADDR_IP, strlen(cBodyBuf), cBodyBuf);
 

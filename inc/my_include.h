@@ -110,6 +110,9 @@ typedef enum _tagHB_BOOL
 #define AUDIO_MAX_SIZE	(307200) //音频最大为300K
 
 
+#define SERIAL_DEV_SERVER_IP	"192.168.0.253" //串口服务器ip
+#define SERIAL_DEV_SERVER_PORT	(8188)
+
 #define MAX_ERR_CRITICAL	10
 #define MAX_ERR_TIMES		3	//最大失败次数
 

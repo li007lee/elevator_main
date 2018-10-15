@@ -159,7 +159,7 @@ static HB_S32 elevator_upload_audio(char *pAudioBase64, HB_U64 lluAudioRecordTim
 	//计算MD5值
 	calculate_md5(cSign, cBodyBuf);
 	//拼接发送字符串
-	snprintf(url, sizeof(url), "/OPEN_UNION/4QAEAAABAB4/IOT_upfile/?app_id=OPEN_BASE_APP&sign=%s", cSign);
+	snprintf(url, sizeof(url), "/OPEN_UNION/4QAEAAABAB4/IOT_upload_audio/?app_id=OPEN_BASE_APP&sign=%s", cSign);
 	snprintf(cSendRecvString, sizeof(cSendRecvString), "POST %s HTTP/1.1\r\nHost:%s:8088\r\ncontent-type: text/plain; charset=utf-8\r\nContent-Length: %d\r\nConnection:keep-alive\r\n\r\n%s",
 			url, PT_ADDR_IP, strlen(cBodyBuf), cBodyBuf);
 
@@ -260,18 +260,20 @@ static HB_VOID *thread_upload_audio(HB_HANDLE hArg)
 //=============================================================//
 HB_S32 open_audio()
 {
-	HB_S32 ret = 0;
-
-	ret = hb_ipc_login("admin", "888888", "127.0.0.1", 8101);
-	if (1 != ret)
+	HB_S32 iRet = 0;
+	iRet = hb_ipc_login("admin", "888888", "127.0.0.1", 8101);
+	if (1 != iRet)
 	{
-		printf("\n######### Login IPC FAILED!\n");
-		return -1;
+		iRet = hb_ipc_login("admin", dev_info.sn, "127.0.0.1", 8101);
+		if (1 != iRet)
+		{
+			printf("\n######### Login IPC FAILED!\n");
+			return -1;
+		}
 	}
 
 	//初始化音频链表
 	list_init(&listAudioList);
-//	listAudioList.attrs.copy_data = 1;
 
 	return 0;
 }
@@ -427,6 +429,26 @@ HB_S32 close_audio()
 	list_destroy(&listAudioList);
 
 	return 0;
+}
+
+
+
+HB_VOID *thread_start_audio_moudle(HB_HANDLE hArg)
+{
+	system("rm ./*.g711a");
+
+	if (open_audio() < 0)
+	{
+		printf("open audio failed!\n");
+		return NULL;
+	}
+
+	read_audio();
+
+	pause();
+	close_audio();
+
+	return NULL;
 }
 
 

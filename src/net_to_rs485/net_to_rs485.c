@@ -29,8 +29,8 @@ int open_serial_dev_ser(int *pFd)
 
 	bzero(&saddr,sizeof(saddr));
 	saddr.sin_family = AF_INET;
-	saddr.sin_port = htons(23); //服务器绑定的端口
-	saddr.sin_addr.s_addr = inet_addr("192.168.2.1");//服务器的IP地址
+	saddr.sin_port = htons(SERIAL_DEV_SERVER_PORT); //服务器绑定的端口
+	saddr.sin_addr.s_addr = inet_addr(SERIAL_DEV_SERVER_IP);//服务器的IP地址
 
 	if (*pFd > 0)
 	{

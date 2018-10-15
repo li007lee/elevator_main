@@ -25,6 +25,7 @@ HB_S32 open_audio();
 HB_S32 read_audio();
 HB_S32 close_audio();
 
+HB_VOID *thread_start_audio_moudle(HB_HANDLE hArg);
 
 
 #endif /* AUDIO_CTRL_H_ */
