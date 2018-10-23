@@ -124,7 +124,7 @@ int recv_from_serial_dev_ser(int *pFd)
 								iGetPicFlag = 1;
 							}
 
-							iCurDistance = (HB_S32)(atof(&tmpbuff[2]) * 1000);
+							iCurDistance = (HB_S32)(atof(&tmpbuff[1]) * 1000);
 							if (0 == iCurDistance)
 							{
 								//采集有问题，词条数据丢弃
@@ -137,7 +137,7 @@ int recv_from_serial_dev_ser(int *pFd)
 							if (iGetPicFlag)
 							{
 								//静止状态下检测电梯是否开始运动，若由静止变为运动就进行拍照
-								if (abs(iDistance[0]-iDistance[1]) > 10 || abs(iDistance[1]-iDistance[2]) > 10)
+								if (abs(iDistance[0]-iDistance[1]) > 20 || abs(iDistance[1]-iDistance[2]) > 20)
 								{
 									iGetPicFlag = 0;
 									pthread_t threadUploadPicId = 0;
@@ -150,7 +150,7 @@ int recv_from_serial_dev_ser(int *pFd)
 						else
 						{
 							iDataFlag++;
-							iDistance[iIndex] = (HB_S32)(atof(&tmpbuff[2]) * 1000);
+							iDistance[iIndex] = (HB_S32)(atof(&tmpbuff[1]) * 1000);
 							stDistance.iDistance = iDistance[iIndex];
 							printf("distance0:[%d] [%d] [%d]\n", iDistance[0], iDistance[1], iDistance[2]);
 							iIndex++;

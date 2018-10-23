@@ -89,6 +89,7 @@ typedef enum _tagHB_BOOL
 #define PT_PORT     8088
 #define UDP_SERVER_IP "elevator.hbydt.cn"	//传感器数据上传服务器
 #define UDP_SERVER_PORT 9001
+//#define UDP_SERVER_PORT	9002  //国贸专用
 
 #endif
 
@@ -110,8 +111,10 @@ typedef enum _tagHB_BOOL
 #define AUDIO_MAX_SIZE	(307200) //音频最大为300K
 
 
-#define SERIAL_DEV_SERVER_IP	"192.168.0.253" //串口服务器ip
+#define SERIAL_DEV_SERVER_IP	"192.168.249.253" //串口服务器ip
 #define SERIAL_DEV_SERVER_PORT	(8188)
+
+
 
 #define MAX_ERR_CRITICAL	10
 #define MAX_ERR_TIMES		3	//最大失败次数
